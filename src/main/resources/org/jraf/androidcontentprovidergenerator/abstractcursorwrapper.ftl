@@ -17,51 +17,51 @@ public abstract class AbstractCursorWrapper extends CursorWrapper {
         super(cursor);
     }
 
-    public long getId() {
+    public Long getId() {
         return getLongOrNull(BaseColumns._ID);
     }
 
     protected int getCachedColumnIndexOrThrow(String colName) {
-    	Integer index = mColumnIndexes.get(colName);
-        if (index == null) {
-        	index = getColumnIndexOrThrow(colName);
-        	mColumnIndexes.put(colName, index);
-        }
-        return index;
+      	Integer index = mColumnIndexes.get(colName);
+          if (index == null) {
+          	index = getColumnIndexOrThrow(colName);
+          	mColumnIndexes.put(colName, index);
+          }
+          return index.intValue();
     }
 
     public Integer getIntegerOrNull(String colName) {
-        Integer index = getCachedColumnIndexOrThrow(colName);
+       final int index = getCachedColumnIndexOrThrow(colName);
         if (isNull(index)) return null;
-        return getInt(index);
+        return Integer.valueOf(getInt(index));
     }
     
     public Long getLongOrNull(String colName) {
-        Integer index = getCachedColumnIndexOrThrow(colName);
+        final int index = getCachedColumnIndexOrThrow(colName);
         if (isNull(index)) return null;
-        return getLong(index);
+        return Long.valueOf(getLong(index));
     }
     
     public Float getFloatOrNull(String colName) {
-        Integer index = getCachedColumnIndexOrThrow(colName);
+        final int index = getCachedColumnIndexOrThrow(colName);
         if (isNull(index)) return null;
-        return getFloat(index);
+        return Float.valueOf(getFloat(index));
     }
     
     public Double getDoubleOrNull(String colName) {
-        Integer index = getCachedColumnIndexOrThrow(colName);
+        final int index = getCachedColumnIndexOrThrow(colName);
         if (isNull(index)) return null;
-        return getDouble(index);
+        return Double.valueOf(getDouble(index));
     }
 
     public Boolean getBoolean(String colName) {
-        Integer index = getCachedColumnIndexOrThrow(colName);
+        final int index = getCachedColumnIndexOrThrow(colName);
         if (isNull(index)) return null;
-        return getInt(index) != 0;
+        return Boolean.valueOf(getInt(index) != 0);
     }
 
     public Date getDate(String colName) {
-        Integer index = getCachedColumnIndexOrThrow(colName);
+        final int index = getCachedColumnIndexOrThrow(colName);
         if (isNull(index)) return null;
         return new Date(getLong(index));
     }
