@@ -126,7 +126,7 @@ You need maven to build this app.
 
 `mvn package`
 
-This will produce `android-contentprovider-generator-1.2-bundle.jar` in the `target` folder.
+This will produce `android-contentprovider-generator-1.3.1-bundle.jar` in the `target` folder.
 
 
 Licence
