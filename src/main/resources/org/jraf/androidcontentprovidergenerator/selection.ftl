@@ -1,8 +1,9 @@
 <#if header??>
 ${header}
 </#if>
-package ${config.providerPackage}.${entity.nameLowerCase};
+package ${config.providerPackage}.wrapper.select;
 
+import ${config.providerPackage}.table.${entity.nameCamelCase}Columns;
 import java.util.Date;
 
 import ${config.providerPackage}.base.AbstractSelection;

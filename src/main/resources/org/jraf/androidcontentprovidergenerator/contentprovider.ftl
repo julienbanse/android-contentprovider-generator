@@ -3,6 +3,8 @@ ${header}
 </#if>
 package ${config.providerPackage};
 
+import ${config.projectPackage}.BuildConfig;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -20,7 +22,7 @@ import android.util.Log;
 
 import ${config.projectPackage}.BuildConfig;
 <#list model.entities as entity>
-import ${config.providerPackage}.${entity.nameLowerCase}.${entity.nameCamelCase}Columns;
+import ${config.providerPackage}.table.${entity.nameCamelCase}Columns;
 </#list>
 
 public class ${config.providerClassName} extends ContentProvider {

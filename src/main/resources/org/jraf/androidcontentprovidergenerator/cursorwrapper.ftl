@@ -1,11 +1,13 @@
 <#if header??>
 ${header}
 </#if>
-package ${config.providerPackage}.${entity.nameLowerCase};
+package ${config.providerPackage}.wrapper.cursor;
 
 import java.util.Date;
 
 import android.database.Cursor;
+import ${config.providerPackage}.table.${entity.nameCamelCase}Columns;
+import ${config.projectPackage}.BuildConfig;
 
 import ${config.providerPackage}.base.AbstractCursorWrapper;
 

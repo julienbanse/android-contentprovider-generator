@@ -24,14 +24,7 @@
  */
 package org.jraf.androidcontentprovidergenerator;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
+import com.beust.jcommander.JCommander;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -44,7 +37,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.beust.jcommander.JCommander;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
@@ -138,16 +138,15 @@ public class Main {
         JSONObject config = getConfig(arguments.inputDir);
         String providerPackageName = config.getString("providerPackage");
 
-        File providerPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/'));
+        File providerPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/').concat("/table"));
+        providerPackageDir.mkdirs();
         Map<String, Object> root = new HashMap<String, Object>();
         root.put("config", getConfig(arguments.inputDir));
         root.put("header", Model.get().getHeader());
 
         // Entities
         for (Entity entity : Model.get().getEntities()) {
-            File outputDir = new File(providerPackageDir, entity.getNameLowerCase());
-            outputDir.mkdirs();
-            File outputFile = new File(outputDir, entity.getNameCamelCase() + "Columns.java");
+            File outputFile = new File(providerPackageDir, entity.getNameCamelCase() + "Columns.java");
             Writer out = new OutputStreamWriter(new FileOutputStream(outputFile));
 
             root.put("entity", entity);
@@ -163,6 +162,13 @@ public class Main {
         File providerPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/'));
         File baseClassesDir = new File(providerPackageDir, "base");
         baseClassesDir.mkdirs();
+
+        File cursorWrapperPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/').concat("/wrapper/cursor"));
+        File contentValuesPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/').concat("/wrapper/contentvalues"));
+        File selectionPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/').concat("/wrapper/select"));
+        cursorWrapperPackageDir.mkdirs();
+        contentValuesPackageDir.mkdirs();
+        selectionPackageDir.mkdirs();
 
         Map<String, Object> root = new HashMap<String, Object>();
         root.put("config", getConfig(arguments.inputDir));
@@ -191,11 +197,8 @@ public class Main {
 
         // Entities
         for (Entity entity : Model.get().getEntities()) {
-            File entityDir = new File(providerPackageDir, entity.getNameLowerCase());
-            entityDir.mkdirs();
-
             // Cursor wrapper
-            outputFile = new File(entityDir, entity.getNameCamelCase() + "CursorWrapper.java");
+            outputFile = new File(cursorWrapperPackageDir, entity.getNameCamelCase() + "CursorWrapper.java");
             out = new OutputStreamWriter(new FileOutputStream(outputFile));
             root.put("entity", entity);
             template = getFreeMarkerConfig().getTemplate("cursorwrapper.ftl");
@@ -203,7 +206,7 @@ public class Main {
             IOUtils.closeQuietly(out);
 
             // ContentValues wrapper
-            outputFile = new File(entityDir, entity.getNameCamelCase() + "ContentValues.java");
+            outputFile = new File(contentValuesPackageDir, entity.getNameCamelCase() + "ContentValues.java");
             out = new OutputStreamWriter(new FileOutputStream(outputFile));
             root.put("entity", entity);
             template = getFreeMarkerConfig().getTemplate("contentvalueswrapper.ftl");
@@ -211,7 +214,7 @@ public class Main {
             IOUtils.closeQuietly(out);
 
             // Selection builder
-            outputFile = new File(entityDir, entity.getNameCamelCase() + "Selection.java");
+            outputFile = new File(selectionPackageDir, entity.getNameCamelCase() + "Selection.java");
             out = new OutputStreamWriter(new FileOutputStream(outputFile));
             root.put("entity", entity);
             template = getFreeMarkerConfig().getTemplate("selection.ftl");
