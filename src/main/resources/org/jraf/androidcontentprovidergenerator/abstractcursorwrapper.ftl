@@ -17,15 +17,39 @@ public abstract class AbstractCursorWrapper extends CursorWrapper {
         super(cursor);
     }
 
-    public Long getId() {
-        return getLongOrNull(BaseColumns._ID);
+    public long getId() {
+        return getLong(BaseColumns._ID);
+    }
+
+    public long getLong(String colName) {
+        final int index = getCachedColumnIndexOrThrow(colName);
+        return getLong(index);
+    }
+
+    public int getInt(String colName) {
+        final int index = getCachedColumnIndexOrThrow(colName);
+        return getInt(index);
+    }
+
+    public boolean getBoolean(String colName) {
+        return (getInt(colName) == 1);
+    }
+
+    public double getDouble(String colName) {
+        final int index = getCachedColumnIndexOrThrow(colName);
+        return getDouble(index);
+    }
+
+    public float getFloat(String colName) {
+        final int index = getCachedColumnIndexOrThrow(colName);
+        return getFloat(index);
     }
 
     protected int getCachedColumnIndexOrThrow(String colName) {
       	Integer index = mColumnIndexes.get(colName);
           if (index == null) {
           	index = getColumnIndexOrThrow(colName);
-          	mColumnIndexes.put(colName, index);
+        	mColumnIndexes.put(colName, Integer.valueOf(index));
           }
           return index.intValue();
     }
@@ -52,12 +76,6 @@ public abstract class AbstractCursorWrapper extends CursorWrapper {
         final int index = getCachedColumnIndexOrThrow(colName);
         if (isNull(index)) return null;
         return Double.valueOf(getDouble(index));
-    }
-
-    public Boolean getBoolean(String colName) {
-        final int index = getCachedColumnIndexOrThrow(colName);
-        if (isNull(index)) return null;
-        return Boolean.valueOf(getInt(index) != 0);
     }
 
     public Date getDate(String colName) {

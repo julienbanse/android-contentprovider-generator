@@ -19,6 +19,10 @@ public class ${entity.nameCamelCase}ContentValues extends AbstractContentValuesW
         <#case "DATE">
         mContentValues.put(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value.getTime());
         <#break>
+        <#case "BOOLEAN">
+        <#case "BOOLEAN_PRIMITIVE">
+        mContentValues.put(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value ? 1 : 0);
+        <#break>
         <#default>
         mContentValues.put(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value);
         </#switch>
