@@ -24,13 +24,12 @@
  */
 package org.jraf.androidcontentprovidergenerator.model;
 
-import org.apache.commons.lang.WordUtils;
-
 import java.util.Date;
 import java.util.HashMap;
 
-public class Field {
+import org.apache.commons.lang.WordUtils;
 
+public class Field {
     public static class Json {
 
         public static final String NAME = "name";
@@ -94,6 +93,7 @@ public class Field {
 
         private Class<?> mJavaType;
 
+        private Type(String jsonName, String sqlType, Class<?> javaType) {
         private boolean mIsPrimitiveJavaType;
 
         private Type(String jsonName, String sqlType, Class<?> javaType) {
@@ -107,9 +107,7 @@ public class Field {
 
         public static Type fromJsonName(String jsonName) {
             Type res = sJsonNames.get(jsonName);
-            if (res == null) {
-                throw new IllegalArgumentException("The type '" + jsonName + "' is unknown");
-            }
+            if (res == null) throw new IllegalArgumentException("The type '" + jsonName + "' is unknown");
             return res;
         }
 
@@ -129,13 +127,9 @@ public class Field {
     private static HashMap<String, Type> sJsonNames = new HashMap<String, Type>();
 
     private final String mName;
-
     private final Type mType;
-
     private boolean mIsIndex = false;
-
     private boolean mIsNullable = true;
-
     private String mDefaultValue;
 
     public Field(String name, String type, boolean isIndex, boolean isNullable,

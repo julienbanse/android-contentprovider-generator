@@ -12,8 +12,8 @@ import ${config.providerPackage}.base.AbstractSelection;
  * Selection for the {@code ${entity.nameLowerCase}} table.
  */
 public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity.nameCamelCase}Selection> {
-    public ${entity.nameCamelCase}Selection id(Long... value) {
-        addEquals(${entity.nameCamelCase}Columns._ID, (Object[]) value);
+    public ${entity.nameCamelCase}Selection id(long... value) {
+        addEquals(${entity.nameCamelCase}Columns._ID, toObjectArray(value));
         return this;
     }
     <#list entity.fields as field>
@@ -90,8 +90,8 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
 
     <#switch field.type.name()>
     <#case "DATE">
-    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}(Long... value) {
-        addEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, (Object[]) value);
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}(<#if field.isNullable>Long<#else>long</#if>... value) {
+        addEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, <#if field.isNullable>value<#else>toObjectArray(value)</#if>);
         return this;
     }
 
