@@ -134,33 +134,37 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
     
     
     protected Object[] toObjectArray(int... array) {
-        Object[] res = new Object[array.length];
-        for (int i = 0; i < array.length; i++) {
-            res[i] = array[i];
+        final int size = array.length;
+        final Object[] res = new Object[size];
+        for (int i = 0; i < size; i++) {
+            res[i] = Integer.valueOf(array[i]);
         }
         return res;
     }
 
     protected Object[] toObjectArray(long... array) {
-        Object[] res = new Object[array.length];
-        for (int i = 0; i < array.length; i++) {
-            res[i] = array[i];
+        final int size = array.length;
+        final Object[] res = new Object[size];
+        for (int i = 0; i < size; i++) {
+            res[i] = Long.valueOf(array[i]);
         }
         return res;
     }
 
     protected Object[] toObjectArray(float... array) {
-        Object[] res = new Object[array.length];
-        for (int i = 0; i < array.length; i++) {
-            res[i] = array[i];
+        final int size = array.length;
+        final Object[] res = new Object[size];
+        for (int i = 0; i < size; i++) {
+            res[i] = Float.valueOf(array[i]);
         }
         return res;
     }
 
     protected Object[] toObjectArray(double... array) {
-        Object[] res = new Object[array.length];
-        for (int i = 0; i < array.length; i++) {
-            res[i] = array[i];
+        final int size = array.length;
+        final Object[] res = new Object[size];
+        for (int i = 0; i < size; i++) {
+            res[i] = Double.valueOf(array[i]);
         }
         return res;
     }
@@ -180,5 +184,10 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
         int size = mSelectionArgs.size();
         if (size == 0) return null;
         return mSelectionArgs.toArray(new String[size]);
+    }
+
+    public void clear(){
+        mSelection.setLength(0);
+        mSelectionArgs.clear();
     }
 }

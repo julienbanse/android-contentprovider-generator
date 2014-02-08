@@ -22,15 +22,9 @@ public class ${entity.nameCamelCase}CursorWrapper extends AbstractCursorWrapper 
 
     /**
      * Get the {@code ${field.nameLowerCase}} value.
-     <#if field.isNullable>
-     * Can be {@code null}.
-     <#else>
-     <#if !field.type.hasNotNullableJavaType()>
-     * Cannot be {@code null}.
-     </#if>
-     </#if>
+     *
      */
-    public ${field.javaType.simpleName} get${field.nameCamelCase}() {
+    public ${field.javaType} get${field.nameCamelCase}() {
         <#switch field.type.name()>
         <#case "STRING">
         Integer index = getCachedColumnIndexOrThrow(${entity.nameCamelCase}Columns.${field.nameUpperCase});
