@@ -24,7 +24,7 @@ public class ${entity.nameCamelCase}CursorWrapper extends AbstractCursorWrapper 
      * Get the {@code ${field.nameLowerCase}} value.
      *
      */
-    public ${field.javaType} get${field.nameCamelCase}() {
+    public ${field.type.javaType.simpleName} get${field.nameCamelCase}() {
         <#switch field.type.name()>
         <#case "STRING">
         Integer index = getCachedColumnIndexOrThrow(${entity.nameCamelCase}Columns.${field.nameUpperCase});

@@ -27,6 +27,18 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
     private StringBuilder mSelection = new StringBuilder();
     private List<String> mSelectionArgs = new ArrayList<String>(5);
 
+    protected void addEquals(String column, Object value) {
+        mSelection.append(column);
+        if (value == null) {
+            // Single null value
+            mSelection.append(IS_NULL);
+        } else {
+            // Single value
+            mSelection.append(EQ);
+            mSelectionArgs.add(valueOf(value));
+        }
+    }
+
     protected void addEquals(String column, Object[] value) {
         mSelection.append(column);
 
@@ -48,6 +60,18 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
             // Single value
             mSelection.append(EQ);
             mSelectionArgs.add(valueOf(value[0]));
+        }
+    }
+
+    protected void addNotEquals(String column, Object value) {
+        mSelection.append(column);
+        if (value == null) {
+            // Single null value
+            mSelection.append(IS_NOT_NULL);
+        } else {
+            // Single value
+            mSelection.append(NOT_EQ);
+            mSelectionArgs.add(valueOf(value));
         }
     }
 

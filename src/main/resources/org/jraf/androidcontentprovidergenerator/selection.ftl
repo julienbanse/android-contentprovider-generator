@@ -16,7 +16,7 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
         addEquals(${entity.nameCamelCase}Columns._ID, toObjectArray(value));
         return this;
     }
-    <#list entity.fields as field>
+<#list entity.fields as field>
 
 <#switch field.type.name()>
     <#case "INT">
@@ -30,12 +30,12 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
         return this;
     }
 
-    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}(int[] value) {
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}In(int[] value) {
         addEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, toObjectArray(value));
         return this;
     }
 
-    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Not(int[] value) {
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}NotIn(int[] value) {
         addNotEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, toObjectArray(value));
         return this;
     }
@@ -50,6 +50,16 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
          addNotEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, Double.valueOf(value));
          return this;
      }
+
+     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}In(double[] value) {
+         addEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, toObjectArray(value));
+         return this;
+     }
+
+     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}NotIn(double[] value) {
+         addNotEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, toObjectArray(value));
+         return this;
+     }
      <#break>
      <#case "FLOAT_PRIMITIVE">
      public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}(float value) {
@@ -61,6 +71,16 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
          addNotEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, Float.valueOf(value));
          return this;
      }
+
+     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}In(float[] value) {
+         addEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, toObjectArray(value));
+         return this;
+     }
+
+     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}NotIn(float[] value) {
+         addNotEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, toObjectArray(value));
+         return this;
+     }
      <#break>
      <#case "LONG_PRIMITIVE">
      public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}(long value) {
@@ -70,6 +90,16 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
 
      public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Not(long value) {
          addNotEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, Long.valueOf(value));
+         return this;
+     }
+
+     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}In(long[] value) {
+         addEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, toObjectArray(value));
+         return this;
+     }
+
+     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}NotIn(long[] value) {
+         addNotEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, toObjectArray(value));
          return this;
      }
      <#break>
@@ -86,13 +116,23 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
      }
       <#break>
      <#default>
-    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}(${field.type.javaType.simpleName}... value) {
-        addEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, (Object[]) value);
+     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}(${field.type.javaType.simpleName} value) {
+         addEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value);
+         return this;
+     }
+
+     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Not(${field.type.javaType.simpleName} value) {
+         addNotEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value);
+         return this;
+     }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}In(${field.type.javaType.simpleName}... value) {
+        addEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value);
         return this;
     }
     
-    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Not(${field.type.javaType.simpleName}... value) {
-        addNotEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, (Object[]) value);
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}NotIn(${field.type.javaType.simpleName}... value) {
+        addNotEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value);
         return this;
     }
     </#switch>
@@ -125,8 +165,25 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
         return this;
     }
     <#break>
-    <#case "INTEGER">
+
     <#case "INT">
+    <#case "INTEGER">
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Gt(int value) {
+        return ${field.nameCamelCaseLowerCase}Gt(Integer.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}GtEq(int value) {
+        return ${field.nameCamelCaseLowerCase}GtEq(Integer.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Lt(int value) {
+        return ${field.nameCamelCaseLowerCase}Lt(Integer.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}LtEq(int value) {
+        return ${field.nameCamelCaseLowerCase}LtEq(Integer.valueOf(value));
+    }
+
     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Gt(Integer value) {
         addGreaterThan(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value);
         return this;
@@ -147,8 +204,23 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
         return this;
     }
     <#break>
-    <#case "LONG">
     <#case "LONG_PRIMITIVE">
+    <#case "LONG">
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Gt(long value) {
+        return ${field.nameCamelCaseLowerCase}Gt(Long.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}GtEq(long value) {
+        return ${field.nameCamelCaseLowerCase}GtEq(Long.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Lt(long value) {
+        return ${field.nameCamelCaseLowerCase}Lt(Long.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}LtEq(long value) {
+        return ${field.nameCamelCaseLowerCase}LtEq(Long.valueOf(value));
+    }
     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Gt(Long value) {
         addGreaterThan(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value);
         return this;
@@ -169,8 +241,24 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
         return this;
     }
     <#break>
-    <#case "FLOAT">
     <#case "FLOAT_PRIMITIVE">
+    <#case "FLOAT">
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Gt(float value) {
+        return ${field.nameCamelCaseLowerCase}Gt(Float.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}GtEq(float value) {
+        return ${field.nameCamelCaseLowerCase}GtEq(Float.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Lt(float value) {
+        return ${field.nameCamelCaseLowerCase}Lt(Float.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}LtEq(float value) {
+        return ${field.nameCamelCaseLowerCase}LtEq(Float.valueOf(value));
+    }
+
     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Gt(Float value) {
         addGreaterThan(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value);
         return this;
@@ -211,6 +299,22 @@ public class ${entity.nameCamelCase}Selection extends AbstractSelection<${entity
     public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}LtEq(Double value) {
         addLessThanOrEquals(${entity.nameCamelCase}Columns.${field.nameUpperCase}, value);
         return this;
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Gt(double value) {
+        return ${field.nameCamelCaseLowerCase}Gt(Double.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}GtEq(double value) {
+        return ${field.nameCamelCaseLowerCase}GtEq(Double.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}Lt(double value) {
+        return ${field.nameCamelCaseLowerCase}Lt(Double.valueOf(value));
+    }
+
+    public ${entity.nameCamelCase}Selection ${field.nameCamelCaseLowerCase}LtEq(double value) {
+        return ${field.nameCamelCaseLowerCase}LtEq(Double.valueOf(value));
     }
     <#break>
     </#switch>
