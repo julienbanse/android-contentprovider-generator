@@ -31,7 +31,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.jraf.androidcontentprovidergenerator.model.Constraint;
 import org.jraf.androidcontentprovidergenerator.model.Entity;
+import org.jraf.androidcontentprovidergenerator.model.EntityType;
 import org.jraf.androidcontentprovidergenerator.model.Field;
+import org.jraf.androidcontentprovidergenerator.model.JsonConstants;
 import org.jraf.androidcontentprovidergenerator.model.Model;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,18 +54,24 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 public class Main {
+
     private static String TAG = Constants.TAG + Main.class.getSimpleName();
 
     private static String FILE_CONFIG = "_config.json";
 
     public static class Json {
+
         public static final String TOOL_VERSION = "toolVersion";
+
         public static final String PROVIDER_PACKAGE = "providerPackage";
+
         public static final String PROVIDER_CLASS_NAME = "providerClassName";
+
         public static final String SQLITE_HELPER_CLASS_NAME = "sqliteHelperClassName";
     }
 
     private Configuration mFreemarkerConfig;
+
     private JSONObject mConfig;
 
     private Configuration getFreeMarkerConfig() {
@@ -83,24 +91,34 @@ public class Main {
             }
         });
         for (File entityFile : entityFiles) {
-            if (Config.LOGD) Log.d(TAG, entityFile.getCanonicalPath());
+            if (Config.LOGD) {
+                Log.d(TAG, entityFile.getCanonicalPath());
+            }
             String entityName = FilenameUtils.getBaseName(entityFile.getCanonicalPath());
-            if (Config.LOGD) Log.d(TAG, "entityName=" + entityName);
+            if (Config.LOGD) {
+                Log.d(TAG, "entityName=" + entityName);
+            }
             Entity entity = new Entity(entityName);
             String fileContents = FileUtils.readFileToString(entityFile);
             JSONObject entityJson = new JSONObject(fileContents);
-
+            //Entity type
+            if (entityJson.has(JsonConstants.ENTITY_TYPE)) {
+                entity.setEntityType(
+                        EntityType.valueOf(entityJson.getString(JsonConstants.ENTITY_TYPE)));
+            }
             // Fields
             JSONArray fieldsJson = entityJson.getJSONArray("fields");
             int len = fieldsJson.length();
             for (int i = 0; i < len; i++) {
                 JSONObject fieldJson = fieldsJson.getJSONObject(i);
-                if (Config.LOGD) Log.d(TAG, "fieldJson=" + fieldJson);
-                String name = fieldJson.getString(Field.Json.NAME);
-                String type = fieldJson.getString(Field.Json.TYPE);
-                boolean isIndex = fieldJson.optBoolean(Field.Json.INDEX, false);
-                boolean isNullable = fieldJson.optBoolean(Field.Json.NULLABLE, true);
-                String defaultValue = fieldJson.optString(Field.Json.DEFAULT_VALUE);
+                if (Config.LOGD) {
+                    Log.d(TAG, "fieldJson=" + fieldJson);
+                }
+                String name = fieldJson.getString(JsonConstants.NAME);
+                String type = fieldJson.getString(JsonConstants.TYPE);
+                boolean isIndex = fieldJson.optBoolean(JsonConstants.INDEX, false);
+                boolean isNullable = fieldJson.optBoolean(JsonConstants.NULLABLE, true);
+                String defaultValue = fieldJson.optString(JsonConstants.DEFAULT_VALUE);
                 Field field = new Field(name, type, isIndex, isNullable, defaultValue);
                 entity.addField(field);
             }
@@ -111,7 +129,9 @@ public class Main {
                 len = constraintsJson.length();
                 for (int i = 0; i < len; i++) {
                     JSONObject constraintJson = constraintsJson.getJSONObject(i);
-                    if (Config.LOGD) Log.d(TAG, "constraintJson=" + constraintJson);
+                    if (Config.LOGD) {
+                        Log.d(TAG, "constraintJson=" + constraintJson);
+                    }
                     String name = constraintJson.getString(Constraint.Json.NAME);
                     String definition = constraintJson.getString(Constraint.Json.DEFINITION);
                     Constraint constraint = new Constraint(name, definition);
@@ -127,7 +147,9 @@ public class Main {
             String header = FileUtils.readFileToString(headerFile).trim();
             Model.get().setHeader(header);
         }
-        if (Config.LOGD) Log.d(TAG, Model.get().toString());
+        if (Config.LOGD) {
+            Log.d(TAG, Model.get().toString());
+        }
     }
 
     private JSONObject getConfig(File inputDir) throws IOException, JSONException {
@@ -141,22 +163,27 @@ public class Main {
         try {
             configVersion = mConfig.getString(Json.TOOL_VERSION);
         } catch (JSONException e) {
-            throw new IllegalArgumentException("Could not find 'toolVersion' field in _config.json, which is mandatory and must be equals to '"
-                    + Constants.VERSION + "'");
+            throw new IllegalArgumentException(
+                    "Could not find 'toolVersion' field in _config.json, which is mandatory and must be equals to '"
+                            + Constants.VERSION + "'");
         }
         if (!configVersion.equals(Constants.VERSION)) {
-            throw new IllegalArgumentException("Invalid 'toolVersion' value in _config.json: found '" + configVersion + "' but expected '" + Constants.VERSION
-                    + "'");
+            throw new IllegalArgumentException(
+                    "Invalid 'toolVersion' value in _config.json: found '" + configVersion
+                            + "' but expected '" + Constants.VERSION
+                            + "'");
         }
         return mConfig;
     }
 
-    private void generateColumns(Arguments arguments) throws IOException, JSONException, TemplateException {
+    private void generateColumns(Arguments arguments)
+            throws IOException, JSONException, TemplateException {
         Template template = getFreeMarkerConfig().getTemplate("columns.ftl");
         JSONObject config = getConfig(arguments.inputDir);
         String providerPackageName = config.getString(Json.PROVIDER_PACKAGE);
 
-        File providerPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/').concat("/table"));
+        File providerPackageDir = new File(arguments.outputDir,
+                providerPackageName.replace('.', '/').concat("/table"));
         providerPackageDir.mkdirs();
         Map<String, Object> root = new HashMap<String, Object>();
         root.put("config", getConfig(arguments.inputDir));
@@ -164,7 +191,8 @@ public class Main {
 
         // Entities
         for (Entity entity : Model.get().getEntities()) {
-            File outputFile = new File(providerPackageDir, entity.getNameCamelCase() + "Columns.java");
+            File outputFile = new File(providerPackageDir,
+                    entity.getNameCamelCase() + "Columns.java");
             Writer out = new OutputStreamWriter(new FileOutputStream(outputFile));
 
             root.put("entity", entity);
@@ -174,16 +202,21 @@ public class Main {
         }
     }
 
-    private void generateWrappers(Arguments arguments) throws IOException, JSONException, TemplateException {
+    private void generateWrappers(Arguments arguments)
+            throws IOException, JSONException, TemplateException {
         JSONObject config = getConfig(arguments.inputDir);
         String providerPackageName = config.getString(Json.PROVIDER_PACKAGE);
-        File providerPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/'));
+        File providerPackageDir = new File(arguments.outputDir,
+                providerPackageName.replace('.', '/'));
         File baseClassesDir = new File(providerPackageDir, "base");
         baseClassesDir.mkdirs();
 
-        File cursorWrapperPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/').concat("/wrapper/cursor"));
-        File contentValuesPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/').concat("/wrapper/contentvalues"));
-        File selectionPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/').concat("/wrapper/select"));
+        File cursorWrapperPackageDir = new File(arguments.outputDir,
+                providerPackageName.replace('.', '/').concat("/wrapper/cursor"));
+        File contentValuesPackageDir = new File(arguments.outputDir,
+                providerPackageName.replace('.', '/').concat("/wrapper/contentvalues"));
+        File selectionPackageDir = new File(arguments.outputDir,
+                providerPackageName.replace('.', '/').concat("/wrapper/select"));
         cursorWrapperPackageDir.mkdirs();
         contentValuesPackageDir.mkdirs();
         selectionPackageDir.mkdirs();
@@ -216,7 +249,8 @@ public class Main {
         // Entities
         for (Entity entity : Model.get().getEntities()) {
             // Cursor wrapper
-            outputFile = new File(cursorWrapperPackageDir, entity.getNameCamelCase() + "CursorWrapper.java");
+            outputFile = new File(cursorWrapperPackageDir,
+                    entity.getNameCamelCase() + "CursorWrapper.java");
             out = new OutputStreamWriter(new FileOutputStream(outputFile));
             root.put("entity", entity);
             template = getFreeMarkerConfig().getTemplate("cursorwrapper.ftl");
@@ -224,7 +258,8 @@ public class Main {
             IOUtils.closeQuietly(out);
 
             // ContentValues wrapper
-            outputFile = new File(contentValuesPackageDir, entity.getNameCamelCase() + "ContentValues.java");
+            outputFile = new File(contentValuesPackageDir,
+                    entity.getNameCamelCase() + "ContentValues.java");
             out = new OutputStreamWriter(new FileOutputStream(outputFile));
             root.put("entity", entity);
             template = getFreeMarkerConfig().getTemplate("contentvalueswrapper.ftl");
@@ -232,7 +267,8 @@ public class Main {
             IOUtils.closeQuietly(out);
 
             // Selection builder
-            outputFile = new File(selectionPackageDir, entity.getNameCamelCase() + "Selection.java");
+            outputFile = new File(selectionPackageDir,
+                    entity.getNameCamelCase() + "Selection.java");
             out = new OutputStreamWriter(new FileOutputStream(outputFile));
             root.put("entity", entity);
             template = getFreeMarkerConfig().getTemplate("selection.ftl");
@@ -241,13 +277,16 @@ public class Main {
         }
     }
 
-    private void generateContentProvider(Arguments arguments) throws IOException, JSONException, TemplateException {
+    private void generateContentProvider(Arguments arguments)
+            throws IOException, JSONException, TemplateException {
         Template template = getFreeMarkerConfig().getTemplate("contentprovider.ftl");
         JSONObject config = getConfig(arguments.inputDir);
         String providerPackageName = config.getString(Json.PROVIDER_PACKAGE);
-        File providerPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/'));
+        File providerPackageDir = new File(arguments.outputDir,
+                providerPackageName.replace('.', '/'));
         providerPackageDir.mkdirs();
-        File outputFile = new File(providerPackageDir, config.getString(Json.PROVIDER_CLASS_NAME) + ".java");
+        File outputFile = new File(providerPackageDir,
+                config.getString(Json.PROVIDER_CLASS_NAME) + ".java");
         Writer out = new OutputStreamWriter(new FileOutputStream(outputFile));
 
         Map<String, Object> root = new HashMap<String, Object>();
@@ -258,13 +297,16 @@ public class Main {
         template.process(root, out);
     }
 
-    private void generateSqliteHelper(Arguments arguments) throws IOException, JSONException, TemplateException {
+    private void generateSqliteHelper(Arguments arguments)
+            throws IOException, JSONException, TemplateException {
         Template template = getFreeMarkerConfig().getTemplate("sqlitehelper.ftl");
         JSONObject config = getConfig(arguments.inputDir);
         String providerPackageName = config.getString(Json.PROVIDER_PACKAGE);
-        File providerPackageDir = new File(arguments.outputDir, providerPackageName.replace('.', '/'));
+        File providerPackageDir = new File(arguments.outputDir,
+                providerPackageName.replace('.', '/'));
         providerPackageDir.mkdirs();
-        File outputFile = new File(providerPackageDir, config.getString(Json.SQLITE_HELPER_CLASS_NAME) + ".java");
+        File outputFile = new File(providerPackageDir,
+                config.getString(Json.SQLITE_HELPER_CLASS_NAME) + ".java");
         Writer out = new OutputStreamWriter(new FileOutputStream(outputFile));
 
         Map<String, Object> root = new HashMap<String, Object>();

@@ -24,15 +24,20 @@
  */
 package org.jraf.androidcontentprovidergenerator.model;
 
+import org.apache.commons.lang.WordUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.WordUtils;
-
 public class Entity {
+
     private final String mName;
+
+    private EntityType mEntityType = EntityType.Table;
+
     private final List<Field> mFields = new ArrayList<Field>();
+
     private final List<Constraint> mConstraints = new ArrayList<Constraint>();
 
     public Entity(String name) {
@@ -56,7 +61,7 @@ public class Entity {
     }
 
     public String getNameCamelCase() {
-        return WordUtils.capitalizeFully(mName, new char[] { '_' }).replaceAll("_", "");
+        return WordUtils.capitalizeFully(mName, new char[]{'_'}).replaceAll("_", "");
     }
 
     public String getNameLowerCase() {
@@ -69,6 +74,15 @@ public class Entity {
 
     @Override
     public String toString() {
-        return "Entity [mName=" + mName + ", mFields=" + mFields + ", mConstraints=" + mConstraints + "]";
+        return "Entity [mName=" + mName + ", mFields=" + mFields + ", mConstraints=" + mConstraints
+                + "]";
+    }
+
+    public EntityType getEntityType() {
+        return mEntityType;
+    }
+
+    public void setEntityType(EntityType entityType) {
+        mEntityType = entityType;
     }
 }
