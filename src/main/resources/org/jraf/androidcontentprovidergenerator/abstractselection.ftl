@@ -27,7 +27,19 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
     private StringBuilder mSelection = new StringBuilder();
     private List<String> mSelectionArgs = new ArrayList<String>(5);
 
-    protected void addEquals(String column, Object... value) {
+    protected void addEquals(String column, Object value) {
+        mSelection.append(column);
+        if (value == null) {
+            // Single null value
+            mSelection.append(IS_NULL);
+        } else {
+            // Single value
+            mSelection.append(EQ);
+            mSelectionArgs.add(valueOf(value));
+        }
+    }
+
+    protected void addEquals(String column, Object[] value) {
         mSelection.append(column);
 
         if (value == null) {
@@ -37,10 +49,11 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
             // Multiple values ('in' clause)
             mSelection.append(IN);
             for (int i = 0; i < value.length; i++) {
-                mSelection.append(valueOf(value[i]));
+                mSelection.append("?");
                 if (i < value.length - 1) {
                     mSelection.append(COMMA);
                 }
+                mSelectionArgs.add(valueOf(value[i]));
             }
             mSelection.append(PAREN_CLOSE);
         } else {
@@ -50,7 +63,19 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
         }
     }
 
-    protected void addNotEquals(String column, Object... value) {
+    protected void addNotEquals(String column, Object value) {
+        mSelection.append(column);
+        if (value == null) {
+            // Single null value
+            mSelection.append(IS_NOT_NULL);
+        } else {
+            // Single value
+            mSelection.append(NOT_EQ);
+            mSelectionArgs.add(valueOf(value));
+        }
+    }
+
+    protected void addNotEquals(String column, Object[] value) {
         mSelection.append(column);
 
         if (value == null) {
@@ -60,10 +85,11 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
             // Multiple values ('in' clause)
             mSelection.append(NOT_IN);
             for (int i = 0; i < value.length; i++) {
-                mSelection.append(valueOf(value[i]));
+                mSelection.append("?");
                 if (i < value.length - 1) {
                     mSelection.append(COMMA);
                 }
+                mSelectionArgs.add(valueOf(value[i]));
             }
             mSelection.append(PAREN_CLOSE);
         } else {
@@ -129,6 +155,44 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
         mSelection.append(OR);
         return (T) this;
     }
+    
+    
+    protected Object[] toObjectArray(int... array) {
+        final int size = array.length;
+        final Object[] res = new Object[size];
+        for (int i = 0; i < size; i++) {
+            res[i] = Integer.valueOf(array[i]);
+        }
+        return res;
+    }
+
+    protected Object[] toObjectArray(long... array) {
+        final int size = array.length;
+        final Object[] res = new Object[size];
+        for (int i = 0; i < size; i++) {
+            res[i] = Long.valueOf(array[i]);
+        }
+        return res;
+    }
+
+    protected Object[] toObjectArray(float... array) {
+        final int size = array.length;
+        final Object[] res = new Object[size];
+        for (int i = 0; i < size; i++) {
+            res[i] = Float.valueOf(array[i]);
+        }
+        return res;
+    }
+
+    protected Object[] toObjectArray(double... array) {
+        final int size = array.length;
+        final Object[] res = new Object[size];
+        for (int i = 0; i < size; i++) {
+            res[i] = Double.valueOf(array[i]);
+        }
+        return res;
+    }
+
 
     /**
      * Returns the selection produced by this object.
@@ -144,5 +208,10 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
         int size = mSelectionArgs.size();
         if (size == 0) return null;
         return mSelectionArgs.toArray(new String[size]);
+    }
+
+    public void clear(){
+        mSelection.setLength(0);
+        mSelectionArgs.clear();
     }
 }

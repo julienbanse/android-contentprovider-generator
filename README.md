@@ -5,7 +5,7 @@ A small tool to generate an Android ContentProvider.
 It takes a set of entity (a.k.a "table") definitions as the input, and generates:
 - a `ContentProvider` class
 - a `SQLiteOpenHelper` class
-- one `BaseColumns` class per entity 
+- one `BaseColumns` interface per entity 
 - one `CursorWrapper` class per entity
 - one `ContentValues` class per entity
 - one `Selection` class per entity
@@ -20,29 +20,35 @@ This is where you declare a few parameters that will be used to generate the cod
 These are self-explanatory so here is an example:
 ```json
 {
+	"toolVersion": "1.4",
 	"projectPackage": "com.example.app",
 	"providerPackage": "com.example.app.provider",
 	"providerClassName": "ExampleProvider",
 	"sqliteHelperClassName": "ExampleSQLiteOpenHelper",
 	"authority": "com.example.app.provider",
 	"databaseName": "example.db",
-	"enableForeignKeys": true,
+	"enableForeignKeys": true
 }
 ```
 
 ### Entity files
 
 Create one file per entity, naming it `<entity name>.json`.
-Inside each file, declare your fields (a.k.a "columns") with a name, a type.
+Inside each file, declare your fields (a.k.a "columns") with a name and a type.
 You can also optionally declare a default value, an index flag and a nullable flag.
 
 Currently the type can be:
 - `String` (SQLite type: `TEXT`)
 - `Integer` (`INTEGER`)
+- `int` (`INTEGER`)
 - `Long` (`INTEGER`)
+- `long` (`INTEGER`)
 - `Float` (`REAL`)
-- `Double` (`REAL`) 
+- `float` (`REAL`)
+- `Double` (`REAL`)
+- `double` (`REAL`)
 - `Boolean` (`INTEGER`)
+- `boolean` (`INTEGER`)
 - `Date` (`INTEGER`)
 - `byte[]` (`BLOB`).
 
@@ -62,7 +68,7 @@ Here is a `person.json` file as an example:
 			"name": "last_name",
 			"type": "String",
 			"nullable": true,
-            "default_value": "Doe"
+			"default_value": "Doe"
 		},
 		{
 			"name": "age",
@@ -80,16 +86,22 @@ Here is a `person.json` file as an example:
 }
 ```
 
-A more complete example is available in the `etc` folder.
+A more complete example is available in the `etc/sample` folder.
 
 ### The `header.txt` file (optional)
 
 If a `header.txt` file is present, its contents will be inserted at the top of every generated java file.
 
 
+### Get the app
+
+Download the jar from here:
+https://github.com/BoD/android-contentprovider-generator/releases/latest
+
+
 ### Run the app
 
-`java -jar android-contentprovider-generator-1.3-bundle.jar -i <input folder> -o <output folder>`
+`java -jar android-contentprovider-generator-1.4-bundle.jar -i <input folder> -o <output folder>`
 - Input folder: where to find _config.json and your entity json files
 - Output folder: where the resulting files will be generated
 
@@ -100,7 +112,8 @@ If a `header.txt` file is present, its contents will be inserted at the top of e
 ```java
 PersonSelection where = new PersonSelection();
 where.firstName("John").or().age(42);
-Cursor c = context.getContentResolver().query(PersonColumns.CONTENT_URI, projection, where.sel(), where.args(), null);
+Cursor c = context.getContentResolver().query(PersonColumns.CONTENT_URI, projection,
+        where.sel(), where.args(), null);
 ```
 - When using the results of a query, wrap the resulting `Cursor` in the corresponding `CursorWrapper`.  You can then use
 the generated getters directly as shown in this example:
@@ -114,8 +127,7 @@ Long age = person.getAge();
 
 ```java
 PersonContentValues values = new PersonContentValues();
-values.putFirstName("John");
-values.putAge(42l);
+values.putFirstName("John").putAge(42);
 context.getContentResolver().update(personUri, values.getContentValues(), null, null);
 ```
 
@@ -126,7 +138,7 @@ You need maven to build this app.
 
 `mvn package`
 
-This will produce `android-contentprovider-generator-1.3.1-bundle.jar` in the `target` folder.
+This will produce `android-contentprovider-generator-1.4-bundle.jar` in the `target` folder.
 
 
 Licence
