@@ -24,7 +24,7 @@ public class ${config.sqliteHelperClassName} extends SQLiteOpenHelper {
 
     // @formatter:off
     <#list model.entities as entity>
-    <#if entity.entityType == "table">
+    <#if entity.entityType != "view">
     private static final String SQL_CREATE_TABLE_${entity.nameUpperCase} = "CREATE TABLE IF NOT EXISTS "
             + ${entity.nameCamelCase}Columns.TABLE_NAME + " ( "
             + ${entity.nameCamelCase}Columns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -72,12 +72,14 @@ public class ${config.sqliteHelperClassName} extends SQLiteOpenHelper {
             Log.d(TAG, "onCreate");
         }
         <#list model.entities as entity>
+            <#if entity.entityType == "table">
         db.execSQL(SQL_CREATE_TABLE_${entity.nameUpperCase});
-        <#list entity.fields as field>
-        <#if field.isIndex>
+                <#list entity.fields as field>
+                    <#if field.isIndex>
         db.execSQL(SQL_CREATE_INDEX_${entity.nameUpperCase}_${field.nameUpperCase});
-        </#if>
-        </#list>
+                    </#if>
+                </#list>
+            </#if>
         </#list>
     }
 

@@ -107,7 +107,8 @@ public class Main {
             //Entity type
             if (entityJson.has(JsonConstants.ENTITY_TYPE)) {
                 entityType =
-                        EntityType.valueOf(entityJson.getString(JsonConstants.ENTITY_TYPE).toLowerCase());
+                        EntityType.valueOf(
+                                entityJson.getString(JsonConstants.ENTITY_TYPE).toLowerCase());
                 if (entityType == EntityType.view) {
                     entity = new EntityView(entityName);
                 } else {
@@ -272,14 +273,15 @@ public class Main {
             IOUtils.closeQuietly(out);
 
             // ContentValues wrapper
-            outputFile = new File(contentValuesPackageDir,
-                    entity.getNameCamelCase() + "ContentValues.java");
-            out = new OutputStreamWriter(new FileOutputStream(outputFile));
-            root.put("entity", entity);
-            template = getFreeMarkerConfig().getTemplate("contentvalueswrapper.ftl");
-            template.process(root, out);
-            IOUtils.closeQuietly(out);
-
+            if (entity.getEntityType() == EntityType.table) {
+                outputFile = new File(contentValuesPackageDir,
+                        entity.getNameCamelCase() + "ContentValues.java");
+                out = new OutputStreamWriter(new FileOutputStream(outputFile));
+                root.put("entity", entity);
+                template = getFreeMarkerConfig().getTemplate("contentvalueswrapper.ftl");
+                template.process(root, out);
+                IOUtils.closeQuietly(out);
+            }
             // Selection builder
             outputFile = new File(selectionPackageDir,
                     entity.getNameCamelCase() + "Selection.java");
