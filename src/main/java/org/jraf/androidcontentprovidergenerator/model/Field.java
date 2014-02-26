@@ -163,7 +163,7 @@ public class Field {
         return WordUtils.capitalizeFully(mNewName, new char[]{'_'}).replaceAll("_", "");
     }
 
-    public String getNewsNameCamelCaseLowerCase() {
+    public String getNewNameCamelCaseLowerCase() {
         return WordUtils.uncapitalize(getNewNameCamelCase());
     }
 }
