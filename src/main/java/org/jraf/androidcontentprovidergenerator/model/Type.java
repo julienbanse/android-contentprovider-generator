@@ -7,19 +7,19 @@ import java.util.HashMap;
  * Created by jbanse on 25/02/2014.
  */
 public enum Type {
-    STRING(ColumnDataType.TYPE_STRING, "TEXT", String.class),
-    INTEGER(ColumnDataType.TYPE_INTEGER, "INTEGER", Integer.class),
-    INT(ColumnDataType.TYPE_INT, "INTEGER", int.class),
-    LONG(ColumnDataType.TYPE_LONG, "INTEGER", Long.class),
-    LONG_PRIMITIVE(ColumnDataType.TYPE_LONG_PRIMITIVE, "INTEGER", long.class),
-    FLOAT(ColumnDataType.TYPE_FLOAT, "REAL", Float.class),
-    FLOAT_PRIMITIVE(ColumnDataType.TYPE_FLOAT_PRIMITIVE, "REAL", float.class),
-    DOUBLE(ColumnDataType.TYPE_DOUBLE, "REAL", Double.class),
-    DOUBLE_PRIMITIVE(ColumnDataType.TYPE_DOUBLE_PRIMITIVE, "REAL", double.class),
-    BOOLEAN(ColumnDataType.TYPE_BOOLEAN, "INTEGER", Boolean.class),
-    BOOLEAN_PRIMITIVE(ColumnDataType.TYPE_BOOLEAN_PRIMITIVE, "INTEGER", boolean.class),
-    DATE(ColumnDataType.TYPE_DATE, "INTEGER", Date.class),
-    BYTE_ARRAY(ColumnDataType.TYPE_BYTE_ARRAY, "BLOB", byte[].class);
+    STRING( "TEXT", String.class),
+    INTEGER("INTEGER", Integer.class),
+    INT("INTEGER", int.class),
+    LONG("INTEGER", Long.class),
+    LONG_PRIMITIVE("INTEGER", long.class),
+    FLOAT("REAL", Float.class),
+    FLOAT_PRIMITIVE("REAL", float.class),
+    DOUBLE("REAL", Double.class),
+    DOUBLE_PRIMITIVE("REAL", double.class),
+    BOOLEAN( "INTEGER", Boolean.class),
+    BOOLEAN_PRIMITIVE("INTEGER", boolean.class),
+    DATE("INTEGER", Date.class),
+    BYTE_ARRAY("BLOB", byte[].class);
 
     private static HashMap<String, Type> sJsonNames = new HashMap<String, Type>();
 
@@ -45,7 +45,7 @@ public enum Type {
         sJsonNames.put(ColumnDataType.TYPE_BYTE_ARRAY, BYTE_ARRAY);
     }
 
-    private Type(String jsonName, String sqlType, Class<?> javaType) {
+    private Type(String sqlType, Class<?> javaType) {
         mSqlType = sqlType;
         mJavaType = javaType;
         mIsPrimitiveJavaType = (javaType == int.class || javaType == long.class
