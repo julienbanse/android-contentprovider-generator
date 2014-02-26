@@ -151,6 +151,10 @@ public class Field {
         mEntityName = table;
     }
 
+    public String getNewNameUpperCase() {
+        return mNewName.toUpperCase();
+    }
+
     public String getNewNameLowerCase() {
         return mNewName;
     }

@@ -143,7 +143,7 @@ public class Main {
             }
 
             // Constraints (optional)
-            if (entityType == EntityType.table) {
+            if (entityType != EntityType.view) {
                 JSONArray constraintsJson = entityJson.optJSONArray("constraints");
                 if (constraintsJson != null) {
                     len = constraintsJson.length();
