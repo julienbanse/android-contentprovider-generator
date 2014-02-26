@@ -24,6 +24,7 @@ public class ${config.sqliteHelperClassName} extends SQLiteOpenHelper {
 
     // @formatter:off
     <#list model.entities as entity>
+    <#if entity.entityType == "table">
     private static final String SQL_CREATE_TABLE_${entity.nameUpperCase} = "CREATE TABLE IF NOT EXISTS "
             + ${entity.nameCamelCase}Columns.TABLE_NAME + " ( "
             + ${entity.nameCamelCase}Columns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -46,7 +47,7 @@ public class ${config.sqliteHelperClassName} extends SQLiteOpenHelper {
             + ", CONSTRAINT ${constraint.nameUpperCase} ${constraint.definitionUpperCase}"
             </#list>
             + " );";
-
+    </#if>
     <#list entity.fields as field>
     <#if field.isIndex>
     private static final String SQL_CREATE_INDEX_${entity.nameUpperCase}_${field.nameUpperCase} = "CREATE INDEX IDX_${entity.nameUpperCase}_${field.nameUpperCase} "

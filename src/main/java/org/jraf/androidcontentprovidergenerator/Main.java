@@ -31,7 +31,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.jraf.androidcontentprovidergenerator.model.Constraint;
 import org.jraf.androidcontentprovidergenerator.model.Entity;
+import org.jraf.androidcontentprovidergenerator.model.EntityTable;
 import org.jraf.androidcontentprovidergenerator.model.EntityType;
+import org.jraf.androidcontentprovidergenerator.model.EntityView;
 import org.jraf.androidcontentprovidergenerator.model.Field;
 import org.jraf.androidcontentprovidergenerator.model.JsonConstants;
 import org.jraf.androidcontentprovidergenerator.model.Model;
@@ -98,13 +100,23 @@ public class Main {
             if (Config.LOGD) {
                 Log.d(TAG, "entityName=" + entityName);
             }
-            Entity entity = new Entity(entityName);
+            Entity entity;
             String fileContents = FileUtils.readFileToString(entityFile);
             JSONObject entityJson = new JSONObject(fileContents);
+            EntityType entityType;
             //Entity type
             if (entityJson.has(JsonConstants.ENTITY_TYPE)) {
-                entity.setEntityType(
-                        EntityType.valueOf(entityJson.getString(JsonConstants.ENTITY_TYPE)));
+                entityType =
+                        EntityType.valueOf(entityJson.getString(JsonConstants.ENTITY_TYPE).toLowerCase());
+                if (entityType == EntityType.view) {
+                    entity = new EntityView(entityName);
+                } else {
+                    entity = new EntityTable(entityName);
+                }//TODO add virtual table
+
+            } else {
+                entity = new EntityTable(entityName);
+                entityType = EntityType.table;
             }
             // Fields
             JSONArray fieldsJson = entityJson.getJSONArray("fields");
@@ -124,18 +136,20 @@ public class Main {
             }
 
             // Constraints (optional)
-            JSONArray constraintsJson = entityJson.optJSONArray("constraints");
-            if (constraintsJson != null) {
-                len = constraintsJson.length();
-                for (int i = 0; i < len; i++) {
-                    JSONObject constraintJson = constraintsJson.getJSONObject(i);
-                    if (Config.LOGD) {
-                        Log.d(TAG, "constraintJson=" + constraintJson);
+            if (entityType == EntityType.table) {
+                JSONArray constraintsJson = entityJson.optJSONArray("constraints");
+                if (constraintsJson != null) {
+                    len = constraintsJson.length();
+                    for (int i = 0; i < len; i++) {
+                        JSONObject constraintJson = constraintsJson.getJSONObject(i);
+                        if (Config.LOGD) {
+                            Log.d(TAG, "constraintJson=" + constraintJson);
+                        }
+                        String name = constraintJson.getString(Constraint.Json.NAME);
+                        String definition = constraintJson.getString(Constraint.Json.DEFINITION);
+                        Constraint constraint = new Constraint(name, definition);
+                        ((EntityTable) entity).addConstraint(constraint);
                     }
-                    String name = constraintJson.getString(Constraint.Json.NAME);
-                    String definition = constraintJson.getString(Constraint.Json.DEFINITION);
-                    Constraint constraint = new Constraint(name, definition);
-                    entity.addConstraint(constraint);
                 }
             }
 

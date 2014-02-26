@@ -1,0 +1,24 @@
+{
+    "type":"view",
+	"fields": [
+		{
+		    "table": "person",
+			"name": "name",
+			"type": "String"
+		},
+		{
+		    "table": "person",
+			"name": "address",
+			"type": "String"
+		},
+		{
+		    "table": "company",
+			"name": "name",
+			"type": "String"
+		}
+	],
+	"from": [
+	    "company", "person"
+	 ],
+	 "where": "person.company_id = company._id"
+}

@@ -26,26 +26,36 @@ package org.jraf.androidcontentprovidergenerator.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class Model {
+
     private static final Model INSTANCE = new Model();
 
     public static Model get() {
         return INSTANCE;
     }
 
-    private Model() {}
+    private Model() {
+    }
 
-    private final List<Entity> mEntities = new ArrayList<Entity>();
+    private final HashMap<String, Entity> mEntities = new HashMap<String, Entity>();
+
     private String mHeader;
 
     public void addEntity(Entity entity) {
-        mEntities.add(entity);
+        mEntities.put(entity.getNameLowerCase(), entity);
     }
 
     public List<Entity> getEntities() {
-        return Collections.unmodifiableList(mEntities);
+        ArrayList<Entity> entities = new ArrayList<Entity>();
+        entities.addAll(mEntities.values());
+        return Collections.unmodifiableList(entities);
+    }
+
+    public Entity getEntity(String tableName) {
+        return mEntities.get(tableName);
     }
 
     public void setHeader(String header) {

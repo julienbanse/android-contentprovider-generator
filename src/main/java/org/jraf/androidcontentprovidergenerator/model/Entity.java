@@ -28,20 +28,26 @@ import org.apache.commons.lang.WordUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class Entity {
 
-    private final String mName;
+    protected final String mName;
 
-    private EntityType mEntityType = EntityType.Table;
+    protected EntityType mEntityType = EntityType.table;
 
-    private final List<Field> mFields = new ArrayList<Field>();
+    protected final List<Field> mFields = new ArrayList<Field>();
 
-    private final List<Constraint> mConstraints = new ArrayList<Constraint>();
+    protected final List<Constraint> mConstraints = new ArrayList<Constraint>();
 
-    public Entity(String name) {
+    protected final HashMap<String,Entity> mLinkedEntity = new HashMap<String, Entity>();
+
+    protected String mViewWhereSelect;
+
+    public Entity(String name, EntityType type) {
         mName = name.toLowerCase();
+        mEntityType = type;
     }
 
     public void addField(Field field) {
@@ -50,14 +56,6 @@ public class Entity {
 
     public List<Field> getFields() {
         return Collections.unmodifiableList(mFields);
-    }
-
-    public void addConstraint(Constraint constraint) {
-        mConstraints.add(constraint);
-    }
-
-    public List<Constraint> getConstraints() {
-        return Collections.unmodifiableList(mConstraints);
     }
 
     public String getNameCamelCase() {

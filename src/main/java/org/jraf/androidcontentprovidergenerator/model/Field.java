@@ -28,6 +28,8 @@ import org.apache.commons.lang.WordUtils;
 
 public class Field {
 
+    private String mTable;
+
     private final String mName;
 
     private final Type mType;
@@ -38,8 +40,11 @@ public class Field {
 
     private String mDefaultValue;
 
-    public Field(String name, String type, boolean isIndex, boolean isNullable,
+    public Field(String table, String name, String type, boolean isIndex, boolean isNullable,
             String defaultValue) {
+        if (table != null) {
+            mTable = table;
+        }
         mName = name.toLowerCase();
         mType = Type.fromJsonName(type);
         mIsIndex = isIndex;
@@ -54,6 +59,11 @@ public class Field {
             mIsNullable = isNullable;
             mDefaultValue = defaultValue;
         }
+    }
+
+    public Field(String name, String type, boolean isIndex, boolean isNullable,
+            String defaultValue) {
+        this(null, name, type, isIndex, isNullable, defaultValue);
     }
 
     public String getNameUpperCase() {
@@ -92,10 +102,25 @@ public class Field {
         return mDefaultValue != null && mDefaultValue.length() > 0;
     }
 
+    public String getFullName() {
+        if (mTable != null) {
+            return mTable.concat(".").concat(getNameLowerCase());
+        }
+        return getNameLowerCase();
+    }
+
     @Override
     public String toString() {
         return "Field [mName=" + mName + ", mType=" + mType + ", mIsIndex=" + mIsIndex
                 + ", mIsNullable=" + mIsNullable + ", mDefaultValue=" + mDefaultValue
                 + "]";
+    }
+
+    public String getTable() {
+        return mTable;
+    }
+
+    public void setTable(String table) {
+        mTable = table;
     }
 }
