@@ -68,7 +68,9 @@ public class ${config.sqliteHelperClassName} extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onCreate");
+        }
         <#list model.entities as entity>
         db.execSQL(SQL_CREATE_TABLE_${entity.nameUpperCase});
         <#list entity.fields as field>
@@ -91,6 +93,8 @@ public class ${config.sqliteHelperClassName} extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
+        }
     }
 }
