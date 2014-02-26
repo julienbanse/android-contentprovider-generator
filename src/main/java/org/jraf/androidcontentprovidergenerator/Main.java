@@ -132,7 +132,13 @@ public class Main {
                 boolean isIndex = fieldJson.optBoolean(JsonConstants.INDEX, false);
                 boolean isNullable = fieldJson.optBoolean(JsonConstants.NULLABLE, true);
                 String defaultValue = fieldJson.optString(JsonConstants.DEFAULT_VALUE);
-                Field field = new Field(name, type, isIndex, isNullable, defaultValue);
+                Field field;
+                if (entityType == EntityType.view) {
+                    final String newName = fieldJson.optString(JsonConstants.NEW_NAME, null);
+                    field = new Field(entityName,name, newName, type, isIndex, isNullable, defaultValue);
+                } else {
+                    field = new Field(entityName, name, type, isIndex, isNullable, defaultValue);
+                }
                 entity.addField(field);
             }
 

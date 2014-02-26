@@ -41,7 +41,7 @@ public class Entity {
 
     protected final List<Constraint> mConstraints = new ArrayList<Constraint>();
 
-    protected final HashMap<String,Entity> mLinkedEntity = new HashMap<String, Entity>();
+    protected final HashMap<String, Entity> mLinkedEntity = new HashMap<String, Entity>();
 
     protected String mViewWhereSelect;
 
@@ -72,7 +72,8 @@ public class Entity {
 
     @Override
     public String toString() {
-        return "Entity [mName=" + mName + ", mFields=" + mFields + ", mConstraints=" + mConstraints
+        return "Entity [mName=" + mName + ", mFields=" + mFields + ", mConstraints="
+                + mConstraints
                 + "]";
     }
 

@@ -28,7 +28,9 @@ import org.apache.commons.lang.WordUtils;
 
 public class Field {
 
-    private String mTable;
+    private final String mNewName;
+
+    private String mEntityName;
 
     private final String mName;
 
@@ -40,12 +42,21 @@ public class Field {
 
     private String mDefaultValue;
 
-    public Field(String table, String name, String type, boolean isIndex, boolean isNullable,
+    /**
+     * @param entityName field entity name
+     * @param name       field name
+     * @param newName    new field name (use in view)
+     */
+    public Field(String entityName, String name, String newName, String type, boolean isIndex,
+            boolean isNullable,
             String defaultValue) {
-        if (table != null) {
-            mTable = table;
-        }
+        mEntityName = entityName;
         mName = name.toLowerCase();
+        if (newName != null) {
+            mNewName = newName.toLowerCase();
+        } else {
+            mNewName = mName;
+        }
         mType = Type.fromJsonName(type);
         mIsIndex = isIndex;
         if (mType.getIsPrimitiveJavaType()) {
@@ -61,9 +72,25 @@ public class Field {
         }
     }
 
+    /**
+     * Default constructor : no new name and no associated entity.
+     *
+     * @param name field name
+     */
     public Field(String name, String type, boolean isIndex, boolean isNullable,
             String defaultValue) {
-        this(null, name, type, isIndex, isNullable, defaultValue);
+        this(null, name, null, type, isIndex, isNullable, defaultValue);
+    }
+
+    /**
+     * Constructor for field with no new name.
+     *
+     * @param entityName entity name
+     * @param name       field name
+     */
+    public Field(String entityName, String name, String type, boolean isIndex, boolean isNullable,
+            String defaultValue) {
+        this(entityName, name, null, type, isIndex, isNullable, defaultValue);
     }
 
     public String getNameUpperCase() {
@@ -103,8 +130,8 @@ public class Field {
     }
 
     public String getFullName() {
-        if (mTable != null) {
-            return mTable.concat(".").concat(getNameLowerCase());
+        if (mEntityName != null) {
+            return mEntityName.concat(".").concat(getNameLowerCase());
         }
         return getNameLowerCase();
     }
@@ -116,11 +143,23 @@ public class Field {
                 + "]";
     }
 
-    public String getTable() {
-        return mTable;
+    public String getEntityName() {
+        return mEntityName;
     }
 
-    public void setTable(String table) {
-        mTable = table;
+    public void setEntityName(String table) {
+        mEntityName = table;
+    }
+
+    public String getNewNameLowerCase() {
+        return mNewName;
+    }
+
+    public String getNewNameCamelCase() {
+        return WordUtils.capitalizeFully(mNewName, new char[]{'_'}).replaceAll("_", "");
+    }
+
+    public String getNewsNameCamelCaseLowerCase() {
+        return WordUtils.uncapitalize(getNewNameCamelCase());
     }
 }

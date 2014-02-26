@@ -17,6 +17,5 @@ public interface JsonConstants {
 
     String DEFAULT_VALUE = "default_value";
 
-
-
+    String NEW_NAME = "new_name";
 }
