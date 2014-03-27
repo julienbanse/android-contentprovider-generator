@@ -11,4 +11,8 @@ public abstract class AbstractContentValuesWrapper {
     public ContentValues getContentValues() {
         return mContentValues;
     }
+
+    public void clear(){
+        mContentValues.clear();
+    }
 }

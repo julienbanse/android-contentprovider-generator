@@ -1,7 +1,7 @@
 <#if header??>
 ${header}
 </#if>
-package ${config.providerPackage}.${entity.nameLowerCase};
+package ${config.providerPackage}.table;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -15,7 +15,6 @@ public interface ${entity.nameCamelCase}Columns extends BaseColumns {
     String TABLE_NAME = "${entity.nameLowerCase}";
     Uri CONTENT_URI = Uri.parse(${config.providerClassName}.CONTENT_URI_BASE + "/" + TABLE_NAME);
 
-    String _ID = BaseColumns._ID;
     <#list entity.fields as field>
     String ${field.nameUpperCase} = "${field.nameLowerCase}";
     </#list>
