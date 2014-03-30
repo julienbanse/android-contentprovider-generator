@@ -1,18 +1,20 @@
 package org.jraf.androidcontentprovidergenerator.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Created by jbanse on 26/02/2014.
  */
 public class EntityView extends Entity {
 
+    protected String mEntities;
+
+
     public EntityView(String name) {
         super(name, EntityType.view);
     }
 
+    public boolean getHasSelect(){
+        return mViewWhereSelect !=null && mViewWhereSelect.length()>0;
+    }
     public String getViewWhereSelect() {
         return mViewWhereSelect;
     }
@@ -21,17 +23,12 @@ public class EntityView extends Entity {
         mViewWhereSelect = viewWhereSelect;
     }
 
-    public void addEntity(Entity entity) {
-        mLinkedEntity.put(entity.getNameLowerCase(), entity);
+    public void setFromEntity(String entity) {
+        mEntities = entity;
     }
 
-    public List<Entity> getEntities() {
-        ArrayList<Entity> entities = new ArrayList<Entity>();
-        entities.addAll(mLinkedEntity.values());
-        return Collections.unmodifiableList(entities);
+    public String getEntities() {
+        return mEntities;
     }
 
-    public Entity getEntity(String tableName) {
-        return mLinkedEntity.get(tableName);
-    }
 }

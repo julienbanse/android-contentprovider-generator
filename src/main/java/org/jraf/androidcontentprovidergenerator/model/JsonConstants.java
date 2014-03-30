@@ -18,4 +18,8 @@ public interface JsonConstants {
     String DEFAULT_VALUE = "default_value";
 
     String NEW_NAME = "new_name";
+
+     String ENTITY_TABLE = "table";
+    String FROM_ENTITY = "from";
+    String WHERE_ENTITY = "where";
 }

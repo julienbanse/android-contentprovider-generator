@@ -32,9 +32,11 @@ public class Field {
 
     private String mEntityName;
 
+    private Entity mEntityAssociated;
+
     private final String mName;
 
-    private final Type mType;
+    private Type mType;
 
     private boolean mIsIndex = false;
 
@@ -129,18 +131,19 @@ public class Field {
         return mDefaultValue != null && mDefaultValue.length() > 0;
     }
 
-    public String getFullName() {
-        if (mEntityName != null) {
-            return mEntityName.concat(".").concat(getNameLowerCase());
-        }
-        return getNameLowerCase();
-    }
-
     @Override
     public String toString() {
         return "Field [mName=" + mName + ", mType=" + mType + ", mIsIndex=" + mIsIndex
                 + ", mIsNullable=" + mIsNullable + ", mDefaultValue=" + mDefaultValue
                 + "]";
+    }
+
+    public Entity getEntityAssociated() {
+        return mEntityAssociated;
+    }
+
+    public void setEntityAssociated(Entity entityAssociated) {
+        mEntityAssociated = entityAssociated;
     }
 
     public String getEntityName() {
@@ -149,6 +152,10 @@ public class Field {
 
     public void setEntityName(String table) {
         mEntityName = table;
+    }
+
+    public String getEntityNameCamelCase() {
+        return WordUtils.capitalizeFully(mEntityName, new char[]{'_'}).replaceAll("_", "");
     }
 
     public String getNewNameUpperCase() {

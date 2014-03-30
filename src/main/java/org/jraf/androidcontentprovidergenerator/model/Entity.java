@@ -28,7 +28,6 @@ import org.apache.commons.lang.WordUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class Entity {
@@ -40,8 +39,6 @@ public class Entity {
     protected final List<Field> mFields = new ArrayList<Field>();
 
     protected final List<Constraint> mConstraints = new ArrayList<Constraint>();
-
-    protected final HashMap<String, Entity> mLinkedEntity = new HashMap<String, Entity>();
 
     protected String mViewWhereSelect;
 

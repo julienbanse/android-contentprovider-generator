@@ -111,6 +111,10 @@ public class Main {
                                 entityJson.getString(JsonConstants.ENTITY_TYPE).toLowerCase());
                 if (entityType == EntityType.view) {
                     entity = new EntityView(entityName);
+                    ((EntityView) entity).setFromEntity(
+                            entityJson.getString(JsonConstants.FROM_ENTITY));
+                    ((EntityView) entity).setViewWhereSelect(
+                            entityJson.optString(JsonConstants.WHERE_ENTITY));
                 } else {
                     entity = new EntityTable(entityName);
                 }//TODO add virtual table
@@ -135,7 +139,9 @@ public class Main {
                 Field field;
                 if (entityType == EntityType.view) {
                     final String newName = fieldJson.optString(JsonConstants.NEW_NAME, null);
-                    field = new Field(entityName,name, newName, type, isIndex, isNullable, defaultValue);
+                    String fromEntity = fieldJson.getString(JsonConstants.ENTITY_TABLE);
+                    field = new Field(fromEntity, name, newName, type, isIndex, isNullable,
+                            defaultValue);
                 } else {
                     field = new Field(entityName, name, type, isIndex, isNullable, defaultValue);
                 }
@@ -168,10 +174,22 @@ public class Main {
             String header = FileUtils.readFileToString(headerFile).trim();
             Model.get().setHeader(header);
         }
+
+        //set entity for each sql view exist
+        for (Entity entity : Model.get().getEntities()) {
+            if (entity.getEntityType() == EntityType.view) {
+                EntityView entityView = (EntityView) entity;
+                for (Field field : entityView.getFields()) {
+                    field.setEntityAssociated(Model.get().getEntity(field.getEntityName()));
+                }
+            }
+        }
+
         if (Config.LOGD) {
             Log.d(TAG, Model.get().toString());
         }
     }
+
 
     private JSONObject getConfig(File inputDir) throws IOException, JSONException {
         if (mConfig == null) {
