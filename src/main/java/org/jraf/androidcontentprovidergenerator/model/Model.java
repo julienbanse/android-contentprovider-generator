@@ -24,6 +24,8 @@
  */
 package org.jraf.androidcontentprovidergenerator.model;
 
+import org.jraf.androidcontentprovidergenerator.tools.EntityComparator;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -51,6 +53,7 @@ public class Model {
     public List<Entity> getEntities() {
         ArrayList<Entity> entities = new ArrayList<Entity>();
         entities.addAll(mEntities.values());
+        Collections.sort(entities, new EntityComparator());
         return Collections.unmodifiableList(entities);
     }
 
