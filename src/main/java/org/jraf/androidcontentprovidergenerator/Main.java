@@ -204,13 +204,15 @@ public class Main {
         } catch (JSONException e) {
             throw new IllegalArgumentException(
                     "Could not find 'toolVersion' field in _config.json, which is mandatory and must be equals to '"
-                            + Constants.VERSION + "'");
+                            + Constants.VERSION + "'"
+            );
         }
         if (!configVersion.equals(Constants.VERSION)) {
             throw new IllegalArgumentException(
                     "Invalid 'toolVersion' value in _config.json: found '" + configVersion
                             + "' but expected '" + Constants.VERSION
-                            + "'");
+                            + "'"
+            );
         }
         return mConfig;
     }
