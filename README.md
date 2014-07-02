@@ -40,15 +40,15 @@ You can also optionally declare a default value, an index flag and a nullable fl
 Currently the type can be:
 - `String` (SQLite type: `TEXT`)
 - `Integer` (`INTEGER`)
-- `int` (`INTEGER`)
+- `int` (`INTEGER`) with default value 0 if not set
 - `Long` (`INTEGER`)
-- `long` (`INTEGER`)
+- `long` (`INTEGER`) with default value 0 if not set
 - `Float` (`REAL`)
-- `float` (`REAL`)
+- `float` (`REAL`) with default value 0 if not set
 - `Double` (`REAL`)
-- `double` (`REAL`)
+- `double` (`REAL`) with default value 0 if not set
 - `Boolean` (`INTEGER`)
-- `boolean` (`INTEGER`)
+- `boolean` (`INTEGER`) with default value 0 if not set
 - `Date` (`INTEGER`)
 - `byte[]` (`BLOB`).
 
@@ -76,13 +76,45 @@ Here is a `person.json` file as an example:
 			"index": true
 		}
 	],
-	
 	"constraints": [
 		{
 			"name": "unique_name",
 			"definition": "unique (first_name, last_name) on conflict replace"
 		}
 	]
+}
+```
+
+A new entity type can be used : View
+
+```json
+{
+    "type":"view",
+	"fields": [
+		{
+            "table": "person",
+            "name": "_id",
+            "type": "long"
+        },
+		{
+		    "table": "person",
+			"name": "first_name",
+			"type": "String"
+		},
+		{
+		    "table": "person",
+			"name": "last_name",
+			"type": "String"
+		},
+		{
+		    "table": "company",
+			"name": "name",
+			"new_name": "company_name",
+			"type": "String"
+		}
+	],
+	"from": "company, person",
+	 "where": "person.company_id = company._id"
 }
 ```
 
