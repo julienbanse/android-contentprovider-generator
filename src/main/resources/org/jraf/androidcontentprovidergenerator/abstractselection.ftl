@@ -216,7 +216,9 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
      */
     public String[] args() {
         int size = mSelectionArgs.size();
-        if (size == 0) return null;
+        if (size == 0) {
+            return null;
+        }
         return mSelectionArgs.toArray(new String[size]);
     }
 

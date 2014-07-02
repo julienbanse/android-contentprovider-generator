@@ -181,13 +181,13 @@ public class ${config.providerClassName} extends ContentProvider {
         try {
             int numOperations = operations.size();
             ContentProviderResult[] results = new ContentProviderResult[numOperations];
-            int i = 0;
-            for (ContentProviderOperation operation : operations) {
+            int numOperations = operations.size();
+            for (int i = 0; i < numOperations; i++) {
+                final ContentProviderOperation operation = operations.get(i);
                 results[i] = operation.apply(this, results, i);
                 if (operation.isYieldAllowed()) {
                     db.yieldIfContendedSafely();
                 }
-                i++;
             }
             db.setTransactionSuccessful();
             return results;
@@ -204,7 +204,7 @@ public class ${config.providerClassName} extends ContentProvider {
 
     private QueryParams getQueryParams(Uri uri, String selection) {
         QueryParams res = new QueryParams();
-        String id = null;
+        final String id;
         int matchedId = URI_MATCHER.match(uri);
         switch (matchedId) {
             <#list model.entities as entity>
@@ -228,6 +228,9 @@ public class ${config.providerClassName} extends ContentProvider {
             case URI_TYPE_${entity.nameUpperCase}_ID:
             </#list>
                 id = uri.getLastPathSegment();
+            break;
+            default:
+                id = null;
         }
         if (id != null) {
             if (selection != null) {
