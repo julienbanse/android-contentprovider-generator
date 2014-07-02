@@ -22,8 +22,19 @@ public class ${config.sqliteHelperClassName} extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "${config.databaseName}";
     private static final int DATABASE_VERSION = 1;
 
-    // @formatter:off
     <#list model.entities as entity>
+    <#if entity.entityType == "view">
+    private static final String SQL_CREATE_VIEW_${entity.nameUpperCase} = "CREATE VIEW IF NOT EXISTS "
+                + ${entity.nameCamelCase}Columns.VIEW_NAME + " AS SELECT "
+                  <#list entity.fields as field>
+                 + ${field.entityAssociated.nameCamelCase}Columns.TABLE_NAME + "." + ${field.entityAssociated.nameCamelCase}Columns.${field.nameUpperCase} + " AS " + ${entity.nameCamelCase}Columns.${field.newNameUpperCase} +"<#if field_has_next>,</#if> "
+                  </#list>
+                 + " FROM ${entity.entities}"
+                <#if entity.hasSelect>
+                 + " WHERE ${entity.viewWhereSelect}"
+                 </#if>
+                 ;
+    <#else>
     private static final String SQL_CREATE_TABLE_${entity.nameUpperCase} = "CREATE TABLE IF NOT EXISTS "
             + ${entity.nameCamelCase}Columns.TABLE_NAME + " ( "
             + ${entity.nameCamelCase}Columns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -46,15 +57,16 @@ public class ${config.sqliteHelperClassName} extends SQLiteOpenHelper {
             + ", CONSTRAINT ${constraint.nameUpperCase} ${constraint.definitionUpperCase}"
             </#list>
             + " );";
-
+    </#if>
+     <#if entity.entityType != "view">
     <#list entity.fields as field>
     <#if field.isIndex>
     private static final String SQL_CREATE_INDEX_${entity.nameUpperCase}_${field.nameUpperCase} = "CREATE INDEX IDX_${entity.nameUpperCase}_${field.nameUpperCase} "
             + " ON " + ${entity.nameCamelCase}Columns.TABLE_NAME + " ( " + ${entity.nameCamelCase}Columns.${field.nameUpperCase} + " );";
     </#if>
     </#list>
+    </#if>
     </#list>
-    // @formatter:on
 
     public ${config.sqliteHelperClassName}(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -67,14 +79,20 @@ public class ${config.sqliteHelperClassName} extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onCreate");
+        }
         <#list model.entities as entity>
+            <#if entity.entityType == "table">
         db.execSQL(SQL_CREATE_TABLE_${entity.nameUpperCase});
-        <#list entity.fields as field>
-        <#if field.isIndex>
+                <#list entity.fields as field>
+                    <#if field.isIndex>
         db.execSQL(SQL_CREATE_INDEX_${entity.nameUpperCase}_${field.nameUpperCase});
-        </#if>
-        </#list>
+                    </#if>
+                </#list>
+            <#else>
+        db.execSQL(SQL_CREATE_VIEW_${entity.nameUpperCase});
+            </#if>
         </#list>
     }
 
@@ -90,6 +108,8 @@ public class ${config.sqliteHelperClassName} extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
+        }
     }
 }

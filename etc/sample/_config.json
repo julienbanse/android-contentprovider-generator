@@ -1,5 +1,5 @@
 {
-	"toolVersion": "1.4",
+	"toolVersion": "1.6",
 	"projectPackage": "com.example.app",
 	"providerPackage": "com.example.app.provider",
 	"providerClassName": "ExampleProvider",

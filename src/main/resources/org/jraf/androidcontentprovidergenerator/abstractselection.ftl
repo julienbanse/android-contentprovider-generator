@@ -42,15 +42,16 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
     protected void addEquals(String column, Object[] value) {
         mSelection.append(column);
 
-        if (value == null) {
+        if (value == null || value.length == 0) {
             // Single null value
             mSelection.append(IS_NULL);
         } else if (value.length > 1) {
             // Multiple values ('in' clause)
             mSelection.append(IN);
-            for (int i = 0; i < value.length; i++) {
+            final int size = value.length;
+            for (int i = 0; i < size; i++) {
                 mSelection.append("?");
-                if (i < value.length - 1) {
+                if (i < size - 1) {
                     mSelection.append(COMMA);
                 }
                 mSelectionArgs.add(valueOf(value[i]));
@@ -58,8 +59,12 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
             mSelection.append(PAREN_CLOSE);
         } else {
             // Single value
-            mSelection.append(EQ);
-            mSelectionArgs.add(valueOf(value[0]));
+            if (value[0] == null) {
+               mSelection.append(IS_NULL);
+           } else {
+                mSelection.append(EQ);
+                mSelectionArgs.add(valueOf(value[0]));
+            }
         }
     }
 
@@ -70,23 +75,24 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
             mSelection.append(IS_NOT_NULL);
         } else {
             // Single value
-            mSelection.append(NOT_EQ);
-            mSelectionArgs.add(valueOf(value));
+           mSelection.append(EQ);
+           mSelectionArgs.add(valueOf(value));
         }
     }
 
     protected void addNotEquals(String column, Object[] value) {
         mSelection.append(column);
 
-        if (value == null) {
+        if (value == null || value.length == 0) {
             // Single null value
             mSelection.append(IS_NOT_NULL);
         } else if (value.length > 1) {
             // Multiple values ('in' clause)
             mSelection.append(NOT_IN);
-            for (int i = 0; i < value.length; i++) {
+            final int size = value.length;
+            for (int i = 0; i < size; i++) {
                 mSelection.append("?");
-                if (i < value.length - 1) {
+                if (i < size - 1) {
                     mSelection.append(COMMA);
                 }
                 mSelectionArgs.add(valueOf(value[i]));
@@ -94,8 +100,12 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
             mSelection.append(PAREN_CLOSE);
         } else {
             // Single value
-            mSelection.append(NOT_EQ);
-            mSelectionArgs.add(valueOf(value[0]));
+             if (value[0] == null) {
+               mSelection.append(IS_NULL);
+           } else {
+                mSelection.append(NOT_EQ);
+                mSelectionArgs.add(valueOf(value[0]));
+            }
         }
     }
 
@@ -206,7 +216,9 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
      */
     public String[] args() {
         int size = mSelectionArgs.size();
-        if (size == 0) return null;
+        if (size == 0) {
+            return null;
+        }
         return mSelectionArgs.toArray(new String[size]);
     }
 
