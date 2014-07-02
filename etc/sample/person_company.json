@@ -2,13 +2,18 @@
     "type":"view",
 	"fields": [
 		{
+            "table": "person",
+            "name": "_id",
+            "type": "long"
+        },
+		{
 		    "table": "person",
-			"name": "name",
+			"name": "first_name",
 			"type": "String"
 		},
 		{
 		    "table": "person",
-			"name": "address",
+			"name": "last_name",
 			"type": "String"
 		},
 		{
@@ -18,8 +23,6 @@
 			"type": "String"
 		}
 	],
-	"from": [
-	    "company", "person"
-	 ],
+	"from": "company, person",
 	 "where": "person.company_id = company._id"
 }
