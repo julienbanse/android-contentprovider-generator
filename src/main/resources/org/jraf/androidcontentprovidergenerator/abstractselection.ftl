@@ -75,7 +75,7 @@ public abstract class AbstractSelection <T extends AbstractSelection<?>> {
             mSelection.append(IS_NOT_NULL);
         } else {
             // Single value
-           mSelection.append(EQ);
+           mSelection.append(NOT_EQ);
            mSelectionArgs.add(valueOf(value));
         }
     }
