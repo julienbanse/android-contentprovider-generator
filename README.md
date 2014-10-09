@@ -20,7 +20,7 @@ This is where you declare a few parameters that will be used to generate the cod
 These are self-explanatory so here is an example:
 ```json
 {
-	"toolVersion": "1.4",
+	"toolVersion": "1.6",
 	"projectPackage": "com.example.app",
 	"providerPackage": "com.example.app.provider",
 	"providerClassName": "ExampleProvider",
@@ -125,15 +125,9 @@ A more complete example is available in the `etc/sample` folder.
 If a `header.txt` file is present, its contents will be inserted at the top of every generated java file.
 
 
-### Get the app
-
-Download the jar from here:
-https://github.com/BoD/android-contentprovider-generator/releases/latest
-
-
 ### Run the app
 
-`java -jar android-contentprovider-generator-1.4-bundle.jar -i <input folder> -o <output folder>`
+`java -jar android-contentprovider-generator-1.6-bundle.jar -i <input folder> -o <output folder>`
 - Input folder: where to find _config.json and your entity json files
 - Output folder: where the resulting files will be generated
 
@@ -170,7 +164,7 @@ You need maven to build this app.
 
 `mvn package`
 
-This will produce `android-contentprovider-generator-1.4-bundle.jar` in the `target` folder.
+This will produce `android-contentprovider-generator-1.6-bundle.jar` in the `target` folder.
 
 
 Licence
