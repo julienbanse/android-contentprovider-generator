@@ -24,19 +24,27 @@
  */
 package org.jraf.androidcontentprovidergenerator.model;
 
+import org.apache.commons.lang.WordUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.WordUtils;
-
 public class Entity {
-    private final String mName;
-    private final List<Field> mFields = new ArrayList<Field>();
-    private final List<Constraint> mConstraints = new ArrayList<Constraint>();
 
-    public Entity(String name) {
+    protected final String mName;
+
+    protected EntityType mEntityType = EntityType.table;
+
+    protected final List<Field> mFields = new ArrayList<Field>();
+
+    protected final List<Constraint> mConstraints = new ArrayList<Constraint>();
+
+    protected String mViewWhereSelect;
+
+    public Entity(String name, EntityType type) {
         mName = name.toLowerCase();
+        mEntityType = type;
     }
 
     public void addField(Field field) {
@@ -47,16 +55,8 @@ public class Entity {
         return Collections.unmodifiableList(mFields);
     }
 
-    public void addConstraint(Constraint constraint) {
-        mConstraints.add(constraint);
-    }
-
-    public List<Constraint> getConstraints() {
-        return Collections.unmodifiableList(mConstraints);
-    }
-
     public String getNameCamelCase() {
-        return WordUtils.capitalizeFully(mName, new char[] { '_' }).replaceAll("_", "");
+        return WordUtils.capitalizeFully(mName, new char[]{'_'}).replaceAll("_", "");
     }
 
     public String getNameLowerCase() {
@@ -69,6 +69,16 @@ public class Entity {
 
     @Override
     public String toString() {
-        return "Entity [mName=" + mName + ", mFields=" + mFields + ", mConstraints=" + mConstraints + "]";
+        return "Entity [mName=" + mName + ", mFields=" + mFields + ", mConstraints="
+                + mConstraints
+                + "]";
+    }
+
+    public EntityType getEntityType() {
+        return mEntityType;
+    }
+
+    public void setEntityType(EntityType entityType) {
+        mEntityType = entityType;
     }
 }

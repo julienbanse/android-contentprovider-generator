@@ -1,0 +1,28 @@
+{
+    "type":"view",
+	"fields": [
+		{
+            "table": "person",
+            "name": "_id",
+            "type": "long"
+        },
+		{
+		    "table": "person",
+			"name": "first_name",
+			"type": "String"
+		},
+		{
+		    "table": "person",
+			"name": "last_name",
+			"type": "String"
+		},
+		{
+		    "table": "company",
+			"name": "name",
+			"new_name": "company_name",
+			"type": "String"
+		}
+	],
+	"from": "company, person",
+	 "where": "person.company_id = company._id"
+}

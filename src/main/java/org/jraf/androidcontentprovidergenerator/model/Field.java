@@ -26,111 +26,17 @@ package org.jraf.androidcontentprovidergenerator.model;
 
 import org.apache.commons.lang.WordUtils;
 
-import java.util.Date;
-import java.util.HashMap;
-
 public class Field {
 
-    public static class Json {
+    private final String mNewName;
 
-        public static final String NAME = "name";
+    private String mEntityName;
 
-        public static final String TYPE = "type";
-
-        public static final String INDEX = "index";
-
-        public static final String NULLABLE = "nullable";
-
-        public static final String DEFAULT_VALUE = "default_value";
-
-        private static final String TYPE_STRING = "String";
-
-        private static final String TYPE_INTEGER = "Integer";
-
-        private static final String TYPE_INT = "int";
-
-        private static final String TYPE_LONG = "Long";
-
-        private static final String TYPE_LONG_PRIMITIVE = "long";
-
-        private static final String TYPE_FLOAT = "Float";
-
-        private static final String TYPE_FLOAT_PRIMITIVE = "float";
-
-        private static final String TYPE_DOUBLE = "Double";
-
-        private static final String TYPE_DOUBLE_PRIMITIVE = "double";
-
-        private static final String TYPE_BOOLEAN = "Boolean";
-
-        private static final String TYPE_BOOLEAN_PRIMITIVE = "boolean";
-
-        private static final String TYPE_DATE = "Date";
-
-        private static final String TYPE_BYTE_ARRAY = "byte[]";
-
-
-    }
-
-    public static enum Type {
-        // @formatter:off
-        STRING(Json.TYPE_STRING, "TEXT", String.class),
-        INTEGER(Json.TYPE_INTEGER, "INTEGER", Integer.class),
-        INT(Json.TYPE_INT, "INTEGER", int.class),
-        LONG(Json.TYPE_LONG, "INTEGER", Long.class),
-        LONG_PRIMITIVE(Json.TYPE_LONG_PRIMITIVE, "INTEGER", long.class),
-        FLOAT(Json.TYPE_FLOAT, "REAL", Float.class),
-        FLOAT_PRIMITIVE(Json.TYPE_FLOAT_PRIMITIVE, "REAL", float.class),
-        DOUBLE(Json.TYPE_DOUBLE, "REAL", Double.class),
-        DOUBLE_PRIMITIVE(Json.TYPE_DOUBLE_PRIMITIVE, "REAL", double.class),
-        BOOLEAN(Json.TYPE_BOOLEAN, "INTEGER", Boolean.class),
-        BOOLEAN_PRIMITIVE(Json.TYPE_BOOLEAN_PRIMITIVE, "INTEGER", boolean.class),
-        DATE(Json.TYPE_DATE, "INTEGER", Date.class),
-        BYTE_ARRAY(Json.TYPE_BYTE_ARRAY, "BLOB", byte[].class),
-        // @formatter:on
-        ;
-
-        private String mSqlType;
-
-        private Class<?> mJavaType;
-
-        private boolean mIsPrimitiveJavaType;
-
-        private Type(String jsonName, String sqlType, Class<?> javaType) {
-            mSqlType = sqlType;
-            mJavaType = javaType;
-            mIsPrimitiveJavaType = (javaType == int.class || javaType == long.class
-                    || javaType == float.class || javaType == boolean.class
-                    || javaType == boolean.class);
-            sJsonNames.put(jsonName, this);
-        }
-
-        public static Type fromJsonName(String jsonName) {
-            Type res = sJsonNames.get(jsonName);
-            if (res == null) {
-                throw new IllegalArgumentException("The type '" + jsonName + "' is unknown");
-            }
-            return res;
-        }
-
-        public String getSqlType() {
-            return mSqlType;
-        }
-
-        public Class<?> getJavaType() {
-            return mJavaType;
-        }
-
-        public boolean getIsPrimitiveJavaType() {
-            return mIsPrimitiveJavaType;
-        }
-    }
-
-    private static HashMap<String, Type> sJsonNames = new HashMap<String, Type>();
+    private Entity mEntityAssociated;
 
     private final String mName;
 
-    private final Type mType;
+    private Type mType;
 
     private boolean mIsIndex = false;
 
@@ -138,12 +44,24 @@ public class Field {
 
     private String mDefaultValue;
 
-    public Field(String name, String type, boolean isIndex, boolean isNullable,
+    /**
+     * @param entityName field entity name
+     * @param name       field name
+     * @param newName    new field name (use in view)
+     */
+    public Field(String entityName, String name, String newName, String type, boolean isIndex,
+            boolean isNullable,
             String defaultValue) {
+        mEntityName = entityName;
         mName = name.toLowerCase();
+        if (newName != null) {
+            mNewName = newName.toLowerCase();
+        } else {
+            mNewName = mName;
+        }
         mType = Type.fromJsonName(type);
         mIsIndex = isIndex;
-        if (mType.mIsPrimitiveJavaType) {
+        if (mType.getIsPrimitiveJavaType()) {
             mIsNullable = false;
             if (defaultValue == null || defaultValue.isEmpty()) {
                 mDefaultValue = "0";
@@ -154,6 +72,27 @@ public class Field {
             mIsNullable = isNullable;
             mDefaultValue = defaultValue;
         }
+    }
+
+    /**
+     * Default constructor : no new name and no associated entity.
+     *
+     * @param name field name
+     */
+    public Field(String name, String type, boolean isIndex, boolean isNullable,
+            String defaultValue) {
+        this(null, name, null, type, isIndex, isNullable, defaultValue);
+    }
+
+    /**
+     * Constructor for field with no new name.
+     *
+     * @param entityName entity name
+     * @param name       field name
+     */
+    public Field(String entityName, String name, String type, boolean isIndex, boolean isNullable,
+            String defaultValue) {
+        this(entityName, name, null, type, isIndex, isNullable, defaultValue);
     }
 
     public String getNameUpperCase() {
@@ -197,5 +136,41 @@ public class Field {
         return "Field [mName=" + mName + ", mType=" + mType + ", mIsIndex=" + mIsIndex
                 + ", mIsNullable=" + mIsNullable + ", mDefaultValue=" + mDefaultValue
                 + "]";
+    }
+
+    public Entity getEntityAssociated() {
+        return mEntityAssociated;
+    }
+
+    public void setEntityAssociated(Entity entityAssociated) {
+        mEntityAssociated = entityAssociated;
+    }
+
+    public String getEntityName() {
+        return mEntityName;
+    }
+
+    public void setEntityName(String table) {
+        mEntityName = table;
+    }
+
+    public String getEntityNameCamelCase() {
+        return WordUtils.capitalizeFully(mEntityName, new char[]{'_'}).replaceAll("_", "");
+    }
+
+    public String getNewNameUpperCase() {
+        return mNewName.toUpperCase();
+    }
+
+    public String getNewNameLowerCase() {
+        return mNewName;
+    }
+
+    public String getNewNameCamelCase() {
+        return WordUtils.capitalizeFully(mNewName, new char[]{'_'}).replaceAll("_", "");
+    }
+
+    public String getNewNameCamelCaseLowerCase() {
+        return WordUtils.uncapitalize(getNewNameCamelCase());
     }
 }

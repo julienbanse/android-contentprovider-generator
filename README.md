@@ -20,7 +20,7 @@ This is where you declare a few parameters that will be used to generate the cod
 These are self-explanatory so here is an example:
 ```json
 {
-	"toolVersion": "1.4",
+	"toolVersion": "1.6",
 	"projectPackage": "com.example.app",
 	"providerPackage": "com.example.app.provider",
 	"providerClassName": "ExampleProvider",
@@ -40,15 +40,15 @@ You can also optionally declare a default value, an index flag and a nullable fl
 Currently the type can be:
 - `String` (SQLite type: `TEXT`)
 - `Integer` (`INTEGER`)
-- `int` (`INTEGER`)
+- `int` (`INTEGER`) with default value 0 if not set
 - `Long` (`INTEGER`)
-- `long` (`INTEGER`)
+- `long` (`INTEGER`) with default value 0 if not set
 - `Float` (`REAL`)
-- `float` (`REAL`)
+- `float` (`REAL`) with default value 0 if not set
 - `Double` (`REAL`)
-- `double` (`REAL`)
+- `double` (`REAL`) with default value 0 if not set
 - `Boolean` (`INTEGER`)
-- `boolean` (`INTEGER`)
+- `boolean` (`INTEGER`) with default value 0 if not set
 - `Date` (`INTEGER`)
 - `byte[]` (`BLOB`).
 
@@ -76,13 +76,45 @@ Here is a `person.json` file as an example:
 			"index": true
 		}
 	],
-	
 	"constraints": [
 		{
 			"name": "unique_name",
 			"definition": "unique (first_name, last_name) on conflict replace"
 		}
 	]
+}
+```
+
+A new entity type can be used : View
+
+```json
+{
+    "type":"view",
+	"fields": [
+		{
+            "table": "person",
+            "name": "_id",
+            "type": "long"
+        },
+		{
+		    "table": "person",
+			"name": "first_name",
+			"type": "String"
+		},
+		{
+		    "table": "person",
+			"name": "last_name",
+			"type": "String"
+		},
+		{
+		    "table": "company",
+			"name": "name",
+			"new_name": "company_name",
+			"type": "String"
+		}
+	],
+	"from": "company, person",
+	 "where": "person.company_id = company._id"
 }
 ```
 
@@ -93,15 +125,9 @@ A more complete example is available in the `etc/sample` folder.
 If a `header.txt` file is present, its contents will be inserted at the top of every generated java file.
 
 
-### Get the app
-
-Download the jar from here:
-https://github.com/BoD/android-contentprovider-generator/releases/latest
-
-
 ### Run the app
 
-`java -jar android-contentprovider-generator-1.4-bundle.jar -i <input folder> -o <output folder>`
+`java -jar android-contentprovider-generator-1.6-bundle.jar -i <input folder> -o <output folder>`
 - Input folder: where to find _config.json and your entity json files
 - Output folder: where the resulting files will be generated
 
@@ -138,7 +164,7 @@ You need maven to build this app.
 
 `mvn package`
 
-This will produce `android-contentprovider-generator-1.4-bundle.jar` in the `target` folder.
+This will produce `android-contentprovider-generator-1.6-bundle.jar` in the `target` folder.
 
 
 Licence

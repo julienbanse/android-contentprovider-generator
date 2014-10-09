@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import ${config.projectPackage}.BuildConfig;
 <#list model.entities as entity>
 import ${config.providerPackage}.table.${entity.nameCamelCase}Columns;
 </#list>
@@ -51,8 +50,13 @@ public class ${config.providerClassName} extends ContentProvider {
 
     static {
         <#list model.entities as entity>
+        <#if entity.entityType == "view">
+        URI_MATCHER.addURI(AUTHORITY, ${entity.nameCamelCase}Columns.VIEW_NAME, URI_TYPE_${entity.nameUpperCase});
+        URI_MATCHER.addURI(AUTHORITY, ${entity.nameCamelCase}Columns.VIEW_NAME + "/#", URI_TYPE_${entity.nameUpperCase}_ID);
+        <#else>
         URI_MATCHER.addURI(AUTHORITY, ${entity.nameCamelCase}Columns.TABLE_NAME, URI_TYPE_${entity.nameUpperCase});
         URI_MATCHER.addURI(AUTHORITY, ${entity.nameCamelCase}Columns.TABLE_NAME + "/#", URI_TYPE_${entity.nameUpperCase}_ID);
+        </#if>
         </#list>
     }
 
@@ -69,11 +73,17 @@ public class ${config.providerClassName} extends ContentProvider {
         final int match = URI_MATCHER.match(uri);
         switch (match) {
             <#list model.entities as entity>
+                <#if entity.entityType == "view">
+            case URI_TYPE_${entity.nameUpperCase}:
+                return TYPE_CURSOR_DIR + ${entity.nameCamelCase}Columns.VIEW_NAME;
+            case URI_TYPE_${entity.nameUpperCase}_ID:
+                return TYPE_CURSOR_ITEM + ${entity.nameCamelCase}Columns.VIEW_NAME;
+                <#else>
             case URI_TYPE_${entity.nameUpperCase}:
                 return TYPE_CURSOR_DIR + ${entity.nameCamelCase}Columns.TABLE_NAME;
             case URI_TYPE_${entity.nameUpperCase}_ID:
                 return TYPE_CURSOR_ITEM + ${entity.nameCamelCase}Columns.TABLE_NAME;
-
+                </#if>
             </#list>
         }
         return null;
@@ -81,7 +91,9 @@ public class ${config.providerClassName} extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "insert uri=" + uri + " values=" + values);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "insert uri=" + uri + " values=" + values);
+        }
         final String table = uri.getLastPathSegment();
         final long rowId = m${config.sqliteHelperClassName}.getWritableDatabase().insert(table, null, values);
         String notify;
@@ -93,7 +105,9 @@ public class ${config.providerClassName} extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "bulkInsert uri=" + uri + " values.length=" + values.length);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "bulkInsert uri=" + uri + " values.length=" + values.length);
+        }
         final String table = uri.getLastPathSegment();
         final SQLiteDatabase db = m${config.sqliteHelperClassName}.getWritableDatabase();
         int res = 0;
@@ -120,8 +134,9 @@ public class ${config.providerClassName} extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "update uri=" + uri + " values=" + values + " selection=" + selection + " selectionArgs=" + Arrays.toString(selectionArgs));
+        }
         final QueryParams queryParams = getQueryParams(uri, selection);
         final int res = m${config.sqliteHelperClassName}.getWritableDatabase().update(queryParams.table, values, queryParams.selection, selectionArgs);
         String notify;
@@ -133,7 +148,9 @@ public class ${config.providerClassName} extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "delete uri=" + uri + " selection=" + selection + " selectionArgs=" + Arrays.toString(selectionArgs));
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "delete uri=" + uri + " selection=" + selection + " selectionArgs=" + Arrays.toString(selectionArgs));
+        }
         final QueryParams queryParams = getQueryParams(uri, selection);
         final int res = m${config.sqliteHelperClassName}.getWritableDatabase().delete(queryParams.table, queryParams.selection, selectionArgs);
         String notify;
@@ -146,9 +163,10 @@ public class ${config.providerClassName} extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         final String groupBy = uri.getQueryParameter(QUERY_GROUP_BY);
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "query uri=" + uri + " selection=" + selection + " selectionArgs=" + Arrays.toString(selectionArgs) + " sortOrder=" + sortOrder
                     + " groupBy=" + groupBy);
+        }
         final QueryParams queryParams = getQueryParams(uri, selection);
         final Cursor res = m${config.sqliteHelperClassName}.getReadableDatabase().query(queryParams.table, projection, queryParams.selection, selectionArgs, groupBy,
                 null, sortOrder == null ? queryParams.orderBy : sortOrder);
@@ -163,13 +181,13 @@ public class ${config.providerClassName} extends ContentProvider {
         try {
             int numOperations = operations.size();
             ContentProviderResult[] results = new ContentProviderResult[numOperations];
-            int i = 0;
-            for (ContentProviderOperation operation : operations) {
+            int numOperations = operations.size();
+            for (int i = 0; i < numOperations; i++) {
+                final ContentProviderOperation operation = operations.get(i);
                 results[i] = operation.apply(this, results, i);
                 if (operation.isYieldAllowed()) {
                     db.yieldIfContendedSafely();
                 }
-                i++;
             }
             db.setTransactionSuccessful();
             return results;
@@ -186,13 +204,17 @@ public class ${config.providerClassName} extends ContentProvider {
 
     private QueryParams getQueryParams(Uri uri, String selection) {
         QueryParams res = new QueryParams();
-        String id = null;
+        final String id;
         int matchedId = URI_MATCHER.match(uri);
         switch (matchedId) {
             <#list model.entities as entity>
             case URI_TYPE_${entity.nameUpperCase}:
             case URI_TYPE_${entity.nameUpperCase}_ID:
+                <#if entity.entityType == "view">
+                res.table = ${entity.nameCamelCase}Columns.VIEW_NAME;
+                <#else>
                 res.table = ${entity.nameCamelCase}Columns.TABLE_NAME;
+                </#if>
                 res.orderBy = ${entity.nameCamelCase}Columns.DEFAULT_ORDER;
                 break;
 
@@ -206,6 +228,9 @@ public class ${config.providerClassName} extends ContentProvider {
             case URI_TYPE_${entity.nameUpperCase}_ID:
             </#list>
                 id = uri.getLastPathSegment();
+            break;
+            default:
+                id = null;
         }
         if (id != null) {
             if (selection != null) {
